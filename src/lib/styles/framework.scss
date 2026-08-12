@@ -1,0 +1,49 @@
+@use 'variables';
+
+:root {
+    font-family: 'Inter Variable', 'Inter', sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+}
+
+h1,
+h2,
+h3,
+h4 {
+
+    font-family: "Helvetica", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+}
+
+h1 {
+    font-size: $text-heading-large;
+}
+
+h2 {
+    font-size: $text-heading;
+}
+
+h3 {
+    font-size: $text-heading-small;
+}
+
+h4 {
+    font-size: $text-heading-xsmall;
+}
+
+[role=button] {
+    user-select: none;
+}
+
+*:focus-visible {
+    outline-color: $secondary;
+    outline-offset: 3px;
+    outline-style: solid;
+    outline-width: 2px;
+}
+
+:global(.lucide-icon) {
+    user-select: none;
+    pointer-events: none;
+}
