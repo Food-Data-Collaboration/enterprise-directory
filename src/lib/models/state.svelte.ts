@@ -13,9 +13,12 @@ class SharedUtility {
     init(promise: Promise<any>) {
         this.isLoading = true;
 
-        // This resolves in the background and won't block rendering
-        promise.then((resolvedData) => {
-            this.enterprises = resolvedData;
+        promise.then(async (data: any) => {
+            const json = await data.json();
+            this.enterprises = json["ldp:contains"]
+                .map(Enterprise.fromJSON)
+                .filter((e: Enterprise) => e.name);
+
             this.isLoading = false;
         }).catch((err) => {
             console.error("Data load failed:", err);
