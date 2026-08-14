@@ -1,0 +1,1 @@
+export type CriticalityLevel = "danger" | "warning" | "info" | "success";

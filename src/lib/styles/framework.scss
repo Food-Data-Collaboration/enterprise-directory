@@ -47,3 +47,23 @@ h4 {
     user-select: none;
     pointer-events: none;
 }
+
+.danger {
+    background-color: $danger-light;
+    color: $danger;
+}
+
+.warning {
+    background-color: $warning-mid;
+    color: $warning;
+}
+
+.info {
+    background-color: $secondary-mid;
+    color: $secondary;
+}
+
+.success {
+    background-color: $success-mid;
+    color: $success;
+}

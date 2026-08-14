@@ -1,6 +1,6 @@
 <script lang="ts">
     import { userState } from "$lib/models/state.svelte";
-    import { Grip, MapPinned } from "@lucide/svelte";
+    import { Grip, MapPin } from "@lucide/svelte";
 </script>
 
 {#if userState.isTabbed}
@@ -14,7 +14,7 @@
             bind:group={userState.activeTab}
         />
         <label for="map_tab" title="Show map">
-            <MapPinned size="16" />
+            <MapPin size="18" />
             <span class="label">Map</span>
         </label>
 
@@ -27,7 +27,7 @@
             bind:group={userState.activeTab}
         />
         <label for="directory_tab" title="Show grid">
-            <Grip size="16" />
+            <Grip size="18" />
             <span class="label">Grid</span>
         </label>
         <div class="selection-pill"></div>
@@ -46,6 +46,11 @@
         border-radius: $radius-full;
         user-select: none;
 
+        @media screen and (max-width: $breakpoint-medium) {
+            svg {
+                transform: scale(1.5);
+            }
+        }
         &:has(:focus-visible) {
             outline: 2px solid $secondary;
         }

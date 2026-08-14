@@ -3,7 +3,7 @@
     import logo from "$lib/assets/lwa_icon.png";
     import { userState } from "$lib/models/state.svelte";
     import ButtonTabs from "./ui/button_tabs.svelte";
-    import Card from "./ui/card.svelte";
+    import Notification from "./ui/notification.svelte";
 
     function toggleFilters() {
         userState.showFilters = !userState.showFilters;
@@ -12,6 +12,7 @@
 
 <header>
     <div id="header-main">
+        <dir></dir>
         <img id="head-logo" src={logo} alt="Landworkers Alliance logo" />
         <div id="head-search">
             <input type="text" />
@@ -30,9 +31,10 @@
     </div>
 
     {#if !userState.isLoading && userState.enterprises.length < 1}
-        <Card title="Error">
-            Something went wrong while loading the enterprise directory
-        </Card>
+        <Notification
+            message="Something went wrong while loading the enterprise directory"
+            criticalityLevel="danger"
+        />
     {/if}
 </header>
 
@@ -41,6 +43,9 @@
         position: sticky;
         top: 16px;
         z-index: 5;
+        display: flex;
+        flex-direction: column;
+
         #header-main {
             display: flex;
             flex-direction: column;
