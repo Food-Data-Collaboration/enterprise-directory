@@ -1,6 +1,8 @@
 import type { LayoutLoad } from './$types';
-import { fetchEnterprises } from '$lib/models/state.svelte';
+import { DATA_URL } from "$app/env/public"
 
 export const load: LayoutLoad = async ({ fetch }) => {
-	await fetchEnterprises();
-};
+	return {
+		enterprisePromise: fetch(`${DATA_URL}/enterprises/`)
+	};
+}

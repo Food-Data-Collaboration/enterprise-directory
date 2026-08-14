@@ -6,10 +6,11 @@
         image,
         link,
         children,
-    }: { title: string; image: string; link: string; children: Snippet } =
+    }: { title: string; image?: string; link?: string; children: Snippet } =
         $props();
 
     let targetElement: HTMLDivElement;
+
     onMount(() => {
         targetElement.focus({ preventScroll: true });
         targetElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -17,13 +18,19 @@
 </script>
 
 <div bind:this={targetElement} class="card">
-    <div class="card-image">
-        <img src={image} alt={title + "marketing image"} />
-    </div>
+    {#if image}
+        <div class="card-image">
+            <img src={image} alt={title + " marketing image"} />
+        </div>
+    {/if}
     <section>
-        <a href={link}>
+        {#if link}
+            <a href={link}>
+                <h2>{title}</h2>
+            </a>
+        {:else}
             <h2>{title}</h2>
-        </a>
+        {/if}
 
         {@render children()}
     </section>

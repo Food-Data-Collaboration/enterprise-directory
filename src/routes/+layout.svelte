@@ -4,8 +4,13 @@
 	import "$lib/styles/reset.scss";
 	import "$lib/styles/framework.scss";
 	import Header from "$lib/components/header.svelte";
+	import { userState } from "$lib/models/state.svelte";
 
-	let { children } = $props();
+	let { data, children } = $props();
+
+	$effect(() => {
+		userState.init(data.enterprisePromise);
+	});
 </script>
 
 <svelte:head>

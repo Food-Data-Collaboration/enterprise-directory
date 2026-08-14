@@ -1,5 +1,4 @@
 <script lang="ts">
-    import Card from "./ui/card.svelte";
     import { userState } from "$lib/models/state.svelte";
     import CardEnterprise from "./ui/card_enterprise.svelte";
     import { fade } from "svelte/transition";
@@ -26,6 +25,7 @@
         grid-auto-rows: max-content;
         grid-area: 1 / 1;
         max-height: auto;
+        width: 100%;
         z-index: 0;
         opacity: 1;
         transition: opacity 400ms cubic-bezier(0.34, 1.56, 0.64, 1);

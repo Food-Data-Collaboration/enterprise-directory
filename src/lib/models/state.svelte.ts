@@ -1,33 +1,27 @@
 import { FilterState } from "$lib/models/filter_state.svelte";
-import type { Tabs } from "./tabs";
-import { DATA_URL } from "$app/env/public"
 import { Enterprise } from '$lib/models/enterprise';
 
-export const userState: {
-    selectedEnterprise: Enterprise | undefined,
-    enterprises: Enterprise[],
-    showFilters: boolean,
-    filters: FilterState,
-    activeTab: Tabs,
-    isTabbed: boolean
-} = $state({
-    selectedEnterprise: undefined,
-    enterprises: [],
-    showFilters: false,
-    filters: new FilterState(),
-    activeTab: "Map",
-    isTabbed: true
-});
+class SharedUtility {
+    enterprises = $state<Enterprise[]>([]);
+    selectedEnterprise = $state<Enterprise | null>();
+    isLoading = $state(true);
+    showFilters = $state(false);
+    filters = $state(new FilterState());
+    activeTab = $state("Map");
+    isTabbed = $state(true);
 
+    init(promise: Promise<any>) {
+        this.isLoading = true;
 
-export async function fetchEnterprises() {
-    if (userState.enterprises.length == 0) {
-        let enterprises: Enterprise[] = await fetch(`${DATA_URL}/enterprises/`)
-            .then(async (e: any) => {
-                const data = await e.json();
-                return data["ldp:contains"].map(Enterprise.fromJSON);
-            });
-
-        userState.enterprises = enterprises;
+        // This resolves in the background and won't block rendering
+        promise.then((resolvedData) => {
+            this.enterprises = resolvedData;
+            this.isLoading = false;
+        }).catch((err) => {
+            console.error("Data load failed:", err);
+            this.isLoading = false;
+        });
     }
 }
+
+export const userState = new SharedUtility();
