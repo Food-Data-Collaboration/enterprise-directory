@@ -37,11 +37,11 @@ export default defineConfig(
 		// Override or add rule settings here, such as:
 		// 'svelte/button-has-type': 'error'
 		rules: {
-			rules: {
-				"no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
-				// If using TypeScript ESLint:
-				"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]
-			}
+			// The base rule must stay off wherever typescript-eslint is loaded, or both
+			// report the same unused variable twice.
+			// see: https://typescript-eslint.io/rules/no-unused-vars/
+			"no-unused-vars": 'off',
+			"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]
 		}
 	}
 );

@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Enterprise } from "$lib/models/enterprise";
+    import { resolve } from "$app/paths";
     import { MapPin } from "@lucide/svelte";
     import Card from "$lib/components/ui/card.svelte";
     import Tag from "$lib/components/ui/tag.svelte";
@@ -10,7 +11,7 @@
 <Card
     title={enterprise.name}
     image={enterprise.images[0]}
-    link={enterprise.profileUrl}
+    link={resolve("/enterprises/[id]", { id: enterprise.profileId })}
 >
     <p class="card-location">
         <MapPin />

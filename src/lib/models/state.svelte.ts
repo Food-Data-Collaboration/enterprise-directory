@@ -1,30 +1,30 @@
+import { createContext } from "svelte";
 import { FilterState } from "$lib/models/filter_state.svelte";
 import { Enterprise } from '$lib/models/enterprise';
+import type { DfcEnterprise, LdpContainer } from "$lib/models/dfc";
+import type { Tabs } from "./tabs";
 
-class SharedUtility {
+export class DirectoryState {
     enterprises = $state<Enterprise[]>([]);
     selectedEnterprise = $state<Enterprise | null>();
     isLoading = $state(true);
     showFilters = $state(false);
     filters = $state(new FilterState());
-    activeTab = $state("Map");
+    activeTab = $state<Tabs>("Map");
     isTabbed = $state(true);
 
-    init(promise: Promise<any>) {
+    init(promise: Promise<Response>) {
         this.isLoading = true;
 
-        promise.then(async (data: any) => {
-            const json = await data.json();
-            this.enterprises = json["ldp:contains"]
-                .map(Enterprise.fromJSON)
-                .filter((e: Enterprise) => e.name);
-
-            this.isLoading = false;
+        promise.then(async (response) => {
+            const json: LdpContainer<DfcEnterprise> = await response.json();
+            this.enterprises = (json["ldp:contains"] ?? [])
+                .map((data) => Enterprise.fromJSON(data))
+                .filter((e) => e.name);
         }).catch((err) => {
             console.error("Data load failed:", err);
-            this.isLoading = false;
-        });
+        }).finally(() => this.isLoading = false);
     }
 }
 
-export const userState = new SharedUtility();
+export const [getDirectoryState, setDirectoryState] = createContext<DirectoryState>();

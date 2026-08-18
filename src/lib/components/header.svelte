@@ -1,9 +1,11 @@
 <script lang="ts">
     import { SlidersHorizontal } from "@lucide/svelte";
     import logo from "$lib/assets/lwa_icon.png";
-    import { userState } from "$lib/models/state.svelte";
+    import { getDirectoryState } from "$lib/models/state.svelte";
     import ButtonTabs from "./ui/button_tabs.svelte";
     import Notification from "./ui/notification.svelte";
+
+    const userState = getDirectoryState();
 
     function toggleFilters() {
         userState.showFilters = !userState.showFilters;

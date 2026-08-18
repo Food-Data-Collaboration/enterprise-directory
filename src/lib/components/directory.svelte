@@ -1,9 +1,11 @@
 <script lang="ts">
-    import { userState } from "$lib/models/state.svelte";
+    import { getDirectoryState } from "$lib/models/state.svelte";
     import CardEnterprise from "./ui/card_enterprise.svelte";
     import { fade } from "svelte/transition";
 
     let { hidden }: { hidden: boolean } = $props();
+
+    const userState = getDirectoryState();
 </script>
 
 <article

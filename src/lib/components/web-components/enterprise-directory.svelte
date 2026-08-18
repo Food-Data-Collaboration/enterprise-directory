@@ -1,98 +1,98 @@
 <script lang="ts">
+    import favicon from "$lib/assets/favicon.svg";
     import "@fontsource-variable/inter";
     import "$lib/styles/reset.scss";
-    import { Enterprise } from "$lib/models/enterprise";
-    import Filters from "$lib/components/filters.svelte";
-    import Map from "$lib/components/map.svelte";
-    import Directory from "$lib/components/directory.svelte";
+    import "$lib/styles/framework.scss";
     import Header from "$lib/components/header.svelte";
-    import { userState } from "$lib/models/state.svelte";
-    import Profile from "$lib/components/profile.svelte";
+    import {
+        DirectoryState,
+        setDirectoryState,
+    } from "$lib/models/state.svelte";
+    import { onMount } from "svelte";
+    import { DATA_URL } from "$app/env/public";
+    import Filters from "$lib/components/filters.svelte";
+    import Directory from "$lib/components/directory.svelte";
+    import Map from "$lib/components/map.svelte";
 
-    let i = 20;
-    while (i > 0) {
-        userState.enterprises.push(new Enterprise());
-        i--;
-    }
+    const userState = setDirectoryState(new DirectoryState());
 
-    // DEBUG OPTIONS
-    let showMap = $state(true);
-    let showDirectory = $state(true);
-    // END DEBUG OPTIONS
-
-    $effect(() => {
-        console.log(userState.selectedEnterprise);
-        if (userState.isTabbed) {
-            if (userState.activeTab == "Map") {
-                showMap = true;
-                showDirectory = false;
-            } else {
-                showMap = false;
-                showDirectory = true;
-            }
-        }
+    onMount(() => {
+        const enterprisePromise = fetch(`${DATA_URL}/enterprises/`);
+        userState.init(enterprisePromise);
     });
 </script>
 
+<svelte:head>
+    <link rel="icon" href={favicon} />
+</svelte:head>
+
 <div id="layout">
     <Header />
-
     <main>
-        {#if userState.showFilters}
-            <aside id="sidebar-left" class:hide={!userState.showFilters}>
-                <Filters />
-            </aside>
-        {/if}
+        <aside class:hide={!userState.showFilters}>
+            <Filters />
+        </aside>
         <section>
-            <Map hidden={!showMap} />
-            <Directory hidden={!showDirectory} />
+            <Map hidden={userState.activeTab != "Map"} />
+            <Directory hidden={userState.activeTab != "Directory"} />
         </section>
     </main>
-
-    {#if userState.selectedEnterprise != undefined}
-        <section id="sidebar-right">
-            <Profile enterprise={userState.selectedEnterprise} />
-        </section>
-    {/if}
 </div>
 
 <style lang="scss">
     #layout {
+        position: relative;
         display: flex;
         flex-direction: column;
-        margin: 0 $gap;
+        margin: $gap;
         gap: $gap;
-        min-height: 100vh;
+        min-height: calc(100vh - (2 * $gap));
     }
 
     main {
         position: relative;
-        flex-grow: 1;
         display: flex;
+        flex-grow: 1;
         flex-direction: row;
         gap: $gap;
+
+        @media screen and (min-width: $breakpoint-medium) {
+            gap: 0;
+            margin: 0 calc(-1 * $gap);
+        }
+
+        section {
+            display: grid;
+        }
 
         aside {
             position: fixed;
             display: flex;
+            flex-shrink: 0;
             inset: 0;
             z-index: 3;
-            border-radius: 30px;
             background-color: $white;
-            flex-shrink: 0;
-        }
+            width: 100%;
+            transition: all 200ms ease-in-out;
+            content-visibility: visible;
 
-        @media screen and (min-width: $breakpoint-medium) {
-            grid-template-areas: "header" "content";
-            gap: 0;
-            margin: 0 calc(-1 * $gap);
-
-            aside {
+            @media screen and (min-width: $breakpoint-medium) {
                 position: sticky;
-                top: 0;
-                // width: calc($sidebar-width-large + $gap);
-                border-radius: 0;
-                max-height: 100vh;
+                top: 16px;
+                width: calc($sidebar-width-large + $gap);
+                max-height: calc(100vh - (2 * $gap));
+                margin: 0 0 0 $gap;
+            }
+
+            &.hide {
+                transform: translateX(-100vw);
+                width: 0;
+                margin: 0;
+                content-visibility: hidden;
+
+                @media screen and (min-width: $breakpoint-medium) {
+                    transform: translateX(-calc(($sidebar-width-large + $gap)));
+                }
             }
         }
     }

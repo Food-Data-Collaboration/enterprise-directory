@@ -4,9 +4,14 @@
 	import "$lib/styles/reset.scss";
 	import "$lib/styles/framework.scss";
 	import Header from "$lib/components/header.svelte";
-	import { userState } from "$lib/models/state.svelte";
+	import {
+		DirectoryState,
+		setDirectoryState,
+	} from "$lib/models/state.svelte";
 
 	let { data, children } = $props();
+
+	const userState = setDirectoryState(new DirectoryState());
 
 	$effect(() => {
 		userState.init(data.enterprisePromise);

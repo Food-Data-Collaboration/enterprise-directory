@@ -2,7 +2,7 @@
     import maplibregl from "maplibre-gl";
     import { mount, onMount } from "svelte";
     import MapMarker from "./ui/map_pin.svelte";
-    import { userState } from "$lib/models/state.svelte";
+    import { getDirectoryState } from "$lib/models/state.svelte";
     import { MapPin } from "@lucide/svelte";
     import { Enterprise } from "$lib/models/enterprise";
     import CardEnterprise from "./ui/card_enterprise.svelte";
@@ -13,10 +13,11 @@
     let map: maplibregl.Map;
     let markers: maplibregl.Marker[] = [];
 
+    const userState = getDirectoryState();
+
     onMount(async () => {
-        const maplibregl = await import("maplibre-gl");
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const maplibreglcss = await import("maplibre-gl/dist/maplibre-gl.css");
+        await import("maplibre-gl/dist/maplibre-gl.css");
         map = new maplibregl.Map({
             container: "map",
             style: "https://raw.githubusercontent.com/go2garret/maps/main/src/assets/json/openStreetMap.json",
@@ -26,7 +27,11 @@
         map.on("idle", () => {
             isLoading = false;
         });
+        const centre = markers[0]?._lngLat ?? { lng: -3, lat: 55 };
+        map.setCenter(centre);
+    });
 
+    $effect(() => {
         userState.enterprises
             .filter(
                 (enterprise: Enterprise) =>
@@ -79,8 +84,10 @@
                 markers.push(Marker);
             });
 
-        const centre = markers[0]?._lngLat ?? { lng: -3, lat: 55 };
-        map.setCenter(centre);
+        if (map) {
+            const centre = markers[0]?._lngLat ?? { lng: -3, lat: 55 };
+            map.setCenter(centre);
+        }
     });
 </script>
 

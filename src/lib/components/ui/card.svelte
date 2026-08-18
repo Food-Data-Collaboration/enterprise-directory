@@ -1,23 +1,20 @@
 <script lang="ts">
-    import { onMount, type Snippet } from "svelte";
+    import { type Snippet } from "svelte";
 
     let {
         title,
         image,
         link,
         children,
-    }: { title: string; image?: string; link?: string; children: Snippet } =
-        $props();
-
-    let targetElement: HTMLDivElement;
-
-    onMount(() => {
-        targetElement.focus({ preventScroll: true });
-        targetElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
+    }: {
+        title: string;
+        image?: string;
+        link?: string;
+        children: Snippet;
+    } = $props();
 </script>
 
-<div bind:this={targetElement} class="card">
+<div class="card">
     {#if image}
         <div class="card-image">
             <img src={image} alt={title + " marketing image"} />
@@ -25,6 +22,7 @@
     {/if}
     <section>
         {#if link}
+            <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
             <a href={link}>
                 <h2>{title}</h2>
             </a>

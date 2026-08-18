@@ -2,27 +2,18 @@
     import Filters from "$lib/components/filters.svelte";
     import Map from "$lib/components/map.svelte";
     import Directory from "$lib/components/directory.svelte";
-    import { userState } from "$lib/models/state.svelte";
+    import { getDirectoryState } from "$lib/models/state.svelte";
 
-    let showMap = $state(userState.activeTab == "Map");
-    let showDirectory = $state(userState.activeTab != "Map");
-
-    $effect(() => {
-        if (!userState.isTabbed) return;
-
-        showMap = userState.activeTab == "Map";
-        showDirectory = userState.activeTab != "Map";
-    });
+    const userState = getDirectoryState();
 </script>
 
 <main>
     <aside class:hide={!userState.showFilters}>
         <Filters />
     </aside>
-
     <section>
-        <Map hidden={!showMap} />
-        <Directory hidden={!showDirectory} />
+        <Map hidden={userState.activeTab != "Map"} />
+        <Directory hidden={userState.activeTab != "Directory"} />
     </section>
 </main>
 

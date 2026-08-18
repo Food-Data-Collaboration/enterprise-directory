@@ -2,7 +2,9 @@
     import { FilterState } from "$lib/models/filter_state.svelte";
     import { ArrowRight, X } from "@lucide/svelte";
     import ButtonCheckbox from "./ui/button_checkbox.svelte";
-    import { userState } from "$lib/models/state.svelte";
+    import { getDirectoryState } from "$lib/models/state.svelte";
+
+    const userState = getDirectoryState();
 
     let filters: FilterState = new FilterState();
     let productCategories: { name: string; value: string }[] = [

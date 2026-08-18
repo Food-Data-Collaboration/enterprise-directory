@@ -1,6 +1,8 @@
 <script lang="ts">
-    import { userState } from "$lib/models/state.svelte";
+    import { getDirectoryState } from "$lib/models/state.svelte";
     import { Grip, MapPin } from "@lucide/svelte";
+
+    const userState = getDirectoryState();
 </script>
 
 {#if userState.isTabbed}
@@ -46,11 +48,6 @@
         border-radius: $radius-full;
         user-select: none;
 
-        @media screen and (max-width: $breakpoint-medium) {
-            svg {
-                transform: scale(1.5);
-            }
-        }
         &:has(:focus-visible) {
             outline: 2px solid $secondary;
         }
