@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    {#if !userState.isLoading && userState.enterprises.length < 1}
+    {#if !userState.isLoadingEnterprises && userState.enterprises.length < 1}
         <Notification
             message="Something went wrong while loading the enterprise directory"
             criticalityLevel="danger"

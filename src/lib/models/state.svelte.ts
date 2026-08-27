@@ -7,14 +7,14 @@ import type { Tabs } from "./tabs";
 export class DirectoryState {
     enterprises = $state<Enterprise[]>([]);
     selectedEnterprise = $state<Enterprise | null>();
-    isLoading = $state(true);
+    isLoadingEnterprises = $state(true);
     showFilters = $state(false);
     filters = $state(new FilterState());
     activeTab = $state<Tabs>("Map");
     isTabbed = $state(true);
 
     init(promise: Promise<Response>) {
-        this.isLoading = true;
+        this.isLoadingEnterprises = true;
 
         promise.then(async (response) => {
             const json: LdpContainer<DfcEnterprise> = await response.json();
@@ -23,7 +23,7 @@ export class DirectoryState {
                 .filter((e) => e.name);
         }).catch((err) => {
             console.error("Data load failed:", err);
-        }).finally(() => this.isLoading = false);
+        }).finally(() => this.isLoadingEnterprises = false);
     }
 }
 
