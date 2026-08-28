@@ -4,11 +4,15 @@
     import { getDirectoryState } from "$lib/models/state.svelte";
     import ButtonTabs from "./ui/button_tabs.svelte";
     import Notification from "./ui/notification.svelte";
+    import { analytics } from "$lib/analytics";
 
     const userState = getDirectoryState();
 
     function toggleFilters() {
         userState.showFilters = !userState.showFilters;
+        analytics.track("filters_toggled", {
+            is_open: userState.showFilters,
+        });
     }
 </script>
 

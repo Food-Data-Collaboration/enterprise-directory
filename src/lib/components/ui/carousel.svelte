@@ -1,6 +1,7 @@
 <script lang="ts">
     import { ChevronLeft, ChevronRight } from "@lucide/svelte";
     import { fade } from "svelte/transition";
+    import { analytics } from "$lib/analytics";
 
     let { images }: { images: string[] } = $props();
 
@@ -10,14 +11,21 @@
 
     function nextSlide() {
         currentIndex = (currentIndex + 1) % images.length;
+        analytics.track("enterprise_gallery_navigated", { direction: "next" });
     }
 
     function prevSlide() {
         currentIndex = (currentIndex - 1 + images.length) % images.length;
+        analytics.track("enterprise_gallery_navigated", {
+            direction: "previous",
+        });
     }
 
     function goToSlide(index: number) {
         currentIndex = index;
+        analytics.track("enterprise_gallery_navigated", {
+            direction: "selected",
+        });
     }
 
     function handlePointerDown(event: PointerEvent) {

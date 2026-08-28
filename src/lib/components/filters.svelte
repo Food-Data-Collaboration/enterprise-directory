@@ -3,6 +3,7 @@
     import { ArrowRight, X } from "@lucide/svelte";
     import ButtonCheckbox from "./ui/button_checkbox.svelte";
     import { getDirectoryState } from "$lib/models/state.svelte";
+    import { analytics } from "$lib/analytics";
 
     const userState = getDirectoryState();
 
@@ -23,6 +24,11 @@
         { name: "2OF&G Certified Organic", value: "22" },
         { name: "2Community Supported Agriculture", value: "23" },
     ];
+
+    function clearFilters() {
+        filters.reset();
+        analytics.track("filters_cleared");
+    }
 </script>
 
 <div id="filters">
@@ -35,7 +41,7 @@
             <X />
         </button>
         <h2>Filter</h2>
-        <button id="clear-filters" class="btn" onclick={() => filters.reset()}>
+        <button id="clear-filters" class="btn" onclick={clearFilters}>
             Clear all
         </button>
     </header>

@@ -1,8 +1,14 @@
 <script lang="ts">
     import { getDirectoryState } from "$lib/models/state.svelte";
     import { Grip, MapPin } from "@lucide/svelte";
+    import { analytics } from "$lib/analytics";
 
     const userState = getDirectoryState();
+
+    function changeView(view: "Map" | "Directory") {
+        userState.activeTab = view;
+        analytics.track("directory_view_changed", { view });
+    }
 </script>
 
 {#if userState.isTabbed}
@@ -13,7 +19,8 @@
             name="tabs"
             value="Map"
             aria-checked={userState.activeTab == "Map"}
-            bind:group={userState.activeTab}
+            checked={userState.activeTab === "Map"}
+            onchange={() => changeView("Map")}
         />
         <label for="map_tab" title="Show map">
             <MapPin size="18" />
@@ -26,7 +33,8 @@
             name="tabs"
             aria-checked={userState.activeTab == "Directory"}
             value="Directory"
-            bind:group={userState.activeTab}
+            checked={userState.activeTab === "Directory"}
+            onchange={() => changeView("Directory")}
         />
         <label for="directory_tab" title="Show grid">
             <Grip size="18" />

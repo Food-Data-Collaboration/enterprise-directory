@@ -1,5 +1,7 @@
 <script lang="ts">
     import { type Snippet } from "svelte";
+    import { analytics } from "$lib/analytics";
+    import type { ResolvedPathname } from "$app/types";
 
     let {
         title,
@@ -9,7 +11,7 @@
     }: {
         title: string;
         image?: string;
-        link?: string;
+        link?: ResolvedPathname;
         children: Snippet;
     } = $props();
 </script>
@@ -22,8 +24,10 @@
     {/if}
     <section>
         {#if link}
-            <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-            <a href={link}>
+            <a
+                href={link}
+                onclick={() => analytics.track("enterprise_profile_opened")}
+            >
                 <h2>{title}</h2>
             </a>
         {:else}
