@@ -7,6 +7,7 @@
     import { Enterprise } from "$lib/models/enterprise";
     import CardEnterprise from "./ui/card_enterprise.svelte";
     import { fade } from "svelte/transition";
+    import { analytics } from "$lib/analytics";
 
     let { hidden }: { hidden: boolean } = $props();
     let isLoading: boolean = $state(true);
@@ -16,7 +17,6 @@
     const userState = getDirectoryState();
 
     onMount(async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         await import("maplibre-gl/dist/maplibre-gl.css");
         map = new maplibregl.Map({
             container: "map",
@@ -63,6 +63,7 @@
                         freezeElevation: false,
                         essential: false,
                     });
+                    analytics.track("enterprise_map_marker_selected");
                 });
                 customMarker.addEventListener("click", () => {
                     map.flyTo({
@@ -72,6 +73,7 @@
                         freezeElevation: false,
                         essential: false,
                     });
+                    analytics.track("enterprise_map_marker_selected");
                 });
 
                 let Marker: maplibregl.Marker = new maplibregl.Marker({
