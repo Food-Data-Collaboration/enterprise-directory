@@ -120,7 +120,15 @@
         display: flex;
         flex: 1;
         width: 100%;
-        min-height: 60vh;
+
+        // A floor worth having on a page we own, but embedded it would push us past the
+        // bottom of whatever box the host gave us.
+        @include standalone {
+            min-height: 60vh;
+        }
+        @include embedded {
+            min-height: 0;
+        }
         grid-area: 1 / 1;
         z-index: 0;
         opacity: 1;
@@ -142,7 +150,7 @@
                 opacity: 0;
             }
 
-            @media screen and (min-width: $breakpoint-medium) {
+            @include from($breakpoint-medium) {
                 inset: 0 0 0 (-$gap);
             }
         }
@@ -151,7 +159,7 @@
             #map {
                 position: relative;
                 width: 100%;
-                @media screen and (min-width: $breakpoint-medium) {
+                @include from($breakpoint-medium) {
                     inset: 0;
                 }
             }

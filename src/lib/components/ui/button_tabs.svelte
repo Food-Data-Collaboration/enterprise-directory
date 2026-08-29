@@ -90,14 +90,14 @@
                     height: 48px;
                 }
 
-                @media screen and (min-width: $breakpoint-medium) {
+                @include from($breakpoint-medium) {
                     width: $tab-width-large;
                 }
 
                 .label {
                     display: none;
 
-                    @media screen and (min-width: $breakpoint-medium) {
+                    @include from($breakpoint-medium) {
                         display: block;
                     }
                 }
@@ -116,7 +116,7 @@
             &:nth-of-type(2):checked ~ .selection-pill {
                 transform: translateX($tab-width-small);
 
-                @media screen and (min-width: $breakpoint-medium) {
+                @include from($breakpoint-medium) {
                     transform: translateX($tab-width-large);
                 }
             }
@@ -131,7 +131,7 @@
             z-index: 1;
             transition: transform 200ms ease-in-out;
 
-            @media screen and (min-width: $breakpoint-medium) {
+            @include from($breakpoint-medium) {
                 width: $tab-width-large;
             }
         }

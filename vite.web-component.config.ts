@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { resolve } from 'path';
 import { publicEnv } from './src/env.config';
+import svelteConfig from './svelte.config.js';
 
 const shims = resolve('./src/lib/components/web-components');
 
@@ -21,7 +22,16 @@ export default defineConfig(({ mode }) => {
 	}
 
 	return {
-		plugins: [svelte()],
+		plugins: [
+			svelte({
+				preprocess: svelteConfig.preprocess,
+				// Only this build wants it: it is what makes <svelte:options customElement>
+				// register the tag, and it puts each component's styles in the bundle so
+				// they can be injected into the shadow root. The app deliberately does not
+				// set it — there it would cost a flash of unstyled content on first paint.
+				compilerOptions: { ...svelteConfig.compilerOptions, customElement: true }
+			})
+		],
 		define: Object.fromEntries(
 			Object.keys(publicEnv).map((key) => [
 				`import.meta.env.${key}`,
@@ -32,7 +42,7 @@ export default defineConfig(({ mode }) => {
 			preprocessorOptions: {
 				scss: {
 					additionalData: `
-						@use '$lib/styles/variables' as *;
+						@use '$lib/styles/variables' as * with ($web-component: true);
 					`
 				}
 			}
@@ -43,8 +53,6 @@ export default defineConfig(({ mode }) => {
 				'$app/env/public': resolve(shims, 'env.web-component.ts'),
 				'$app/env': resolve(shims, 'env.web-component.ts'),
 				'$app/paths': resolve(shims, 'paths.web-component.ts'),
-				// styles.web-component.ts imports this with ?inline, which does not match
-				// here, so map.svelte's runtime import becomes a no-op instead of a sidecar.
 				'maplibre-gl/dist/maplibre-gl.css': resolve(shims, 'empty.web-component.ts')
 			}
 		},
@@ -55,13 +63,8 @@ export default defineConfig(({ mode }) => {
 				fileName: 'enterprise-directory',
 				formats: ['es' as const]
 			},
-
 			outDir: 'dist/web-component',
-
 			emptyOutDir: true,
-
-			// Fold dynamic imports into the one file rather than emitting side chunks
-			// that whoever embeds the element would have to host alongside it.
 			rolldownOptions: {
 				output: {
 					codeSplitting: false

@@ -139,7 +139,7 @@
         border-radius: $radius-small;
         box-shadow: $drop-shadow;
 
-        @media screen and (min-width: $breakpoint-small) {
+        @include from($breakpoint-small) {
             padding: 24px;
         }
 

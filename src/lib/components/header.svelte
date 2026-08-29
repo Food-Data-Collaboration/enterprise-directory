@@ -58,7 +58,7 @@
             align-items: normal;
             justify-content: center;
 
-            @media screen and (min-width: $breakpoint-small) {
+            @include from($breakpoint-small) {
                 flex-direction: row;
                 align-items: center;
             }
@@ -71,7 +71,7 @@
                 width: 91px;
                 padding: $gap-xsmall;
 
-                @media screen and (min-width: $breakpoint-small) {
+                @include from($breakpoint-small) {
                     display: block;
                 }
             }

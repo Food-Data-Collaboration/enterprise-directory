@@ -28,6 +28,14 @@
         grid-area: 1 / 1;
         max-height: auto;
         width: 100%;
+
+        // In the app the page scrolls. Embedded there is no page to scroll: the element
+        // is clipped to its box, so the list has to carry its own scrollport or the
+        // cards past the fold become unreachable.
+        @include embedded {
+            min-height: 0;
+            overflow-y: auto;
+        }
         z-index: 0;
         opacity: 1;
         transition: opacity 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -39,11 +47,11 @@
             opacity: 0;
         }
 
-        @media screen and (min-width: $breakpoint-small) {
+        @include from($breakpoint-small) {
             grid-template-columns: 1fr 1fr;
         }
 
-        @media screen and (min-width: $breakpoint-medium) {
+        @include from($breakpoint-medium) {
             grid-template-columns: 1fr 1fr;
             margin: 0 $gap;
 
@@ -52,19 +60,19 @@
             }
         }
 
-        @media screen and (min-width: $breakpoint-large) {
+        @include from($breakpoint-large) {
             grid-template-columns: 1fr 1fr 1fr;
             &.sidebar {
                 grid-template-columns: 1fr 1fr;
             }
         }
-        @media screen and (min-width: $breakpoint-xlarge) {
+        @include from($breakpoint-xlarge) {
             grid-template-columns: 1fr 1fr 1fr 1fr;
             &.sidebar {
                 grid-template-columns: 1fr 1fr 1fr;
             }
         }
-        @media screen and (min-width: $breakpoint-xxlarge) {
+        @include from($breakpoint-xxlarge) {
             grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
             &.sidebar {
                 grid-template-columns: 1fr 1fr 1fr 1fr;

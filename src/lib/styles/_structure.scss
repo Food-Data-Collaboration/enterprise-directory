@@ -8,3 +8,32 @@ $sidebar-width-small: 300px;
 $sidebar-width-large: 390px;
 
 $header-height: 48px;
+
+$container: enterprise-directory;
+$web-component: false !default;
+
+@mixin from($min-width) {
+    @if $web-component {
+        @container #{$container} (min-width: #{$min-width}) {
+            @content;
+        }
+    }
+
+    @else {
+        @media screen and (min-width: #{$min-width}) {
+            @content;
+        }
+    }
+}
+
+@mixin embedded {
+    @if $web-component {
+        @content;
+    }
+}
+
+@mixin standalone {
+    @if not $web-component {
+        @content;
+    }
+}

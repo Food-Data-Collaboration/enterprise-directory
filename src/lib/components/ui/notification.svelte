@@ -40,7 +40,7 @@
         overflow: hidden;
         margin-top: $gap;
 
-        @media screen and (min-width: $breakpoint-small) {
+        @include from($breakpoint-small) {
             margin-top: 0;
         }
 

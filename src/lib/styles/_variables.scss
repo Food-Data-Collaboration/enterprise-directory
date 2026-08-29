@@ -1,4 +1,4 @@
-@forward "colours";
+@forward "structure" with ($web-component: false !default);
 @forward "spacing";
-@forward "structure";
+@forward "colours";
 @forward "typography";

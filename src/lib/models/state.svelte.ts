@@ -20,7 +20,7 @@ export class DirectoryState {
             const json: LdpContainer<DfcEnterprise> = await response.json();
             this.enterprises = (json["ldp:contains"] ?? [])
                 .map((data) => Enterprise.fromJSON(data))
-                .filter((e) => e.name);
+                .filter((e) => e.name) ?? [new Enterprise()];
         }).finally(() => this.isLoadingEnterprises = false);
     }
 }

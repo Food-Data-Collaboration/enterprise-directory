@@ -25,7 +25,7 @@
         flex-direction: row;
         gap: $gap;
 
-        @media screen and (min-width: $breakpoint-medium) {
+        @include from($breakpoint-medium) {
             gap: 0;
             margin: 0 calc(-1 * $gap);
         }
@@ -45,7 +45,7 @@
             transition: all 200ms ease-in-out;
             content-visibility: visible;
 
-            @media screen and (min-width: $breakpoint-medium) {
+            @include from($breakpoint-medium) {
                 position: sticky;
                 top: 16px;
                 width: calc($sidebar-width-large + $gap);
@@ -59,8 +59,8 @@
                 margin: 0;
                 content-visibility: hidden;
 
-                @media screen and (min-width: $breakpoint-medium) {
-                    transform: translateX(-calc(($sidebar-width-large + $gap)));
+                @include from($breakpoint-medium) {
+                    transform: translateX(-($sidebar-width-large + $gap));
                 }
             }
         }
