@@ -9,11 +9,15 @@
     padding: 0;
 }
 
-:root {
+:root,
+:host {
     interpolate-size: allow-keywords;
 }
 
-body {
+// :host stands in for body in the web-component build, where the shadow root has
+// no body element of its own.
+body,
+:host {
     line-height: 1.5;
     background-color: $white;
 

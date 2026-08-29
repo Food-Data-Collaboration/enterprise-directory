@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>enterprise-directory web component</title>
+
+		<!--
+			A deliberately hostile host page: its own font, its own reset-ish rules and a
+			couple of selectors that would bleed into the component if the shadow root
+			were not doing its job.
+		-->
+		<style>
+			body {
+				margin: 0;
+				font-family: Georgia, serif;
+				background: #f3e9d8;
+			}
+
+			h1,
+			h2,
+			p {
+				color: #8b0000;
+			}
+
+			.host-chrome {
+				padding: 1.5rem;
+			}
+
+			a {
+				color: #8b0000;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="host-chrome">
+			<h1>Host page</h1>
+			<p>
+				This heading and paragraph are styled by the host page. They should stay
+				Georgia and dark red. The component below should not.
+			</p>
+		</div>
+
+		<enterprise-directory></enterprise-directory>
+
+		<div class="host-chrome">
+			<h2>Below the component</h2>
+			<p>Host page again.</p>
+		</div>
+
+		<script type="module" src="../dist/web-component/enterprise-directory.js"></script>
+	</body>
+</html>

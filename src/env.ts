@@ -1,4 +1,5 @@
 import { defineEnvVars } from '@sveltejs/kit/env';
+import type { PublicEnvKey } from './env.config';
 
 const optionalString = {
     '~standard': {
@@ -10,7 +11,7 @@ const optionalString = {
 };
 
 export const variables = defineEnvVars({
-    DATA_URL: {
+    DATA_HOST: {
         public: true,
         static: true
     },
@@ -28,4 +29,23 @@ export const variables = defineEnvVars({
         static: false,
         schema: optionalString
     },
+    POSTHOG_ASSETS_HOST: {
+        public: true,
+        static: false,
+        schema: optionalString
+    },
 });
+
+/**
+ * Stops this schema and `src/env.config.ts` drifting apart. Without it, a
+ * variable added here would be missing from the web-component build, where it
+ * would come through as `null` at runtime rather than as a build failure.
+ */
+type AssertTrue<T extends true> = T;
+export type _EnvKeysInSync = AssertTrue<
+    [PublicEnvKey] extends [keyof typeof variables]
+        ? [keyof typeof variables] extends [PublicEnvKey]
+            ? true
+            : false
+        : false
+>;

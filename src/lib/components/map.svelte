@@ -12,6 +12,7 @@
     let { hidden }: { hidden: boolean } = $props();
     let isLoading: boolean = $state(true);
     let map: maplibregl.Map;
+    let container: HTMLDivElement;
     let markers: maplibregl.Marker[] = [];
 
     const userState = getDirectoryState();
@@ -19,7 +20,10 @@
     onMount(async () => {
         await import("maplibre-gl/dist/maplibre-gl.css");
         map = new maplibregl.Map({
-            container: "map",
+            // The element, not its id: maplibre resolves a string container with
+            // document.getElementById, which cannot see inside the web component's
+            // shadow root.
+            container,
             style: "https://raw.githubusercontent.com/go2garret/maps/main/src/assets/json/openStreetMap.json",
             zoom: 5,
         });
@@ -99,7 +103,7 @@
     class:stack={!userState.isTabbed}
     transition:fade
 >
-    <div id="map" class={isLoading ? "invisible" : ""}></div>
+    <div id="map" bind:this={container} class={isLoading ? "invisible" : ""}></div>
     {#if isLoading}
         <div
             style="position:fixed; inset: 0; display:flex; align-items: center; justify-content: center;"

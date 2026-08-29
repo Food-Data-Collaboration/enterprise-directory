@@ -1,6 +1,9 @@
 @use 'variables';
 
-:root {
+// :host covers the web-component build, where :root matches nothing because the
+// styles live in a shadow root. It also stops the host page's font inheriting in.
+:root,
+:host {
     font-family: 'Inter Variable', 'Inter', sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
@@ -43,7 +46,7 @@ h4 {
     outline-width: 2px;
 }
 
-:global(.lucide-icon) {
+.lucide-icon {
     user-select: none;
     pointer-events: none;
 }

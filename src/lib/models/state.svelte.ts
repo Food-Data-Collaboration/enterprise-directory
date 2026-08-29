@@ -6,7 +6,7 @@ import type { Tabs } from "./tabs";
 
 export class DirectoryState {
     enterprises = $state<Enterprise[]>([]);
-    selectedEnterprise = $state<Enterprise | null>();
+    selectedEnterprise = $state<Enterprise | null>(null);
     isLoadingEnterprises = $state(true);
     showFilters = $state(false);
     filters = $state(new FilterState());
@@ -21,8 +21,6 @@ export class DirectoryState {
             this.enterprises = (json["ldp:contains"] ?? [])
                 .map((data) => Enterprise.fromJSON(data))
                 .filter((e) => e.name);
-        }).catch((err) => {
-            console.error("Data load failed:", err);
         }).finally(() => this.isLoadingEnterprises = false);
     }
 }

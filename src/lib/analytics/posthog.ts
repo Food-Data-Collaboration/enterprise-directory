@@ -1,4 +1,4 @@
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { POSTHOG_HOST, POSTHOG_PROJECT_TOKEN } from '$app/env/public';
 import posthog from 'posthog-js';
 
@@ -12,7 +12,7 @@ export function initPostHog(): boolean {
 
 	if (!token || !host) {
 		if (dev) {
-			const variable = !token ? 'PUBLIC_POSTHOG_PROJECT_TOKEN' : 'PUBLIC_POSTHOG_HOST';
+			const variable = !token ? 'POSTHOG_PROJECT_TOKEN' : 'POSTHOG_HOST';
 			throw new Error(
 				`${variable} variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once ${variable} is configured`
 			);

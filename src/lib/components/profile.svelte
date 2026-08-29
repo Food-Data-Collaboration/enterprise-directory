@@ -6,14 +6,25 @@
     import type { Enterprise } from "$lib/models/enterprise";
     import { fade } from "svelte/transition";
 
-    let { enterprise }: { enterprise: Enterprise } = $props();
+    // The web component has nowhere to navigate back to, so it passes onback and gets a
+    // button instead of a link. Without it this stays the app's link home.
+    let {
+        enterprise,
+        onback,
+    }: { enterprise: Enterprise; onback?: () => void } = $props();
 </script>
 
 <article transition:fade>
     <header>
-        <a href={resolve(`/`)}>
-            <ArrowLeft size="28" />
-        </a>
+        {#if onback}
+            <button type="button" aria-label="Back to directory" onclick={onback}>
+                <ArrowLeft size="28" />
+            </button>
+        {:else}
+            <a href={resolve(`/`)}>
+                <ArrowLeft size="28" />
+            </a>
+        {/if}
         <h2>{enterprise.name}</h2>
         <img src={enterprise.logoUrl} alt="logo" />
     </header>
@@ -52,9 +63,16 @@
             justify-content: space-between;
             align-items: center;
 
-            a {
+            a,
+            button {
                 padding: $gap-xsmall;
                 color: $black;
+            }
+
+            button {
+                background: none;
+                border: none;
+                display: flex;
             }
 
             img {

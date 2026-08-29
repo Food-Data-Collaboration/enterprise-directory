@@ -1,12 +1,16 @@
 import adapter from '@sveltejs/adapter-node';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
+// import { loadEnv } from 'vite';
+// const env = loadEnv(process.env.NODE_ENV, process.cwd(), '');
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: vitePreprocess(),
 	compilerOptions: {
 		// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
-		runes: ({ filename }) => filename.split(/[/\\]/).includes('node_modules') ? undefined : true
+		runes: ({ filename }) => filename.split(/[/\\]/).includes('node_modules') ? undefined : true,
+		customElement: true
 	},
 	kit: {
 		adapter: adapter(),
@@ -17,6 +21,7 @@ const config = {
 			explicitEnvironmentVariables: true
 		}
 	}
+
 };
 
 export default config;
