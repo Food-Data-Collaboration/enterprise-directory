@@ -58,28 +58,6 @@
                 });
 
                 let popup = new maplibregl.Popup().setDOMContent(popupElement);
-
-                customMarker.addEventListener("focus", () => {
-                    map.flyTo({
-                        center: enterprise.addresses[0].lnglat!,
-                        zoom: 5,
-                        speed: 5,
-                        freezeElevation: false,
-                        essential: false,
-                    });
-                    analytics.track("enterprise_map_marker_selected");
-                });
-                customMarker.addEventListener("click", () => {
-                    map.flyTo({
-                        center: enterprise.addresses[0].lnglat!,
-                        zoom: 13,
-                        speed: 1,
-                        freezeElevation: false,
-                        essential: false,
-                    });
-                    analytics.track("enterprise_map_marker_selected");
-                });
-
                 let Marker: maplibregl.Marker = new maplibregl.Marker({
                     element: customMarker,
                 })
