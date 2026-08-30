@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { SlidersHorizontal } from "@lucide/svelte";
+    import { Search, SlidersHorizontal } from "@lucide/svelte";
     import logo from "$lib/assets/lwa_icon.png";
     import { getDirectoryState } from "$lib/models/state.svelte";
     import ButtonTabs from "./ui/button_tabs.svelte";
@@ -21,7 +21,11 @@
         <dir></dir>
         <img id="head-logo" src={logo} alt="Landworkers Alliance logo" />
         <div id="head-search">
-            <input type="text" />
+            <Search size="24" />
+            <input
+                type="text"
+                placeholder="Find a Landwordker's Alliance producer"
+            />
             <button
                 id="filter-menu"
                 aria-label="Filters"
@@ -84,8 +88,8 @@
                 flex: 1;
                 align-items: center;
                 max-width: 768px;
-                padding: 0 0 0 $gap-large;
-                gap: $gap-xxsmall;
+                padding: 0 0 0 $gap;
+                gap: $gap-xsmall;
                 background-color: $white;
                 border-radius: $radius-full;
                 box-shadow: $drop-shadow;
@@ -108,7 +112,7 @@
                     background-color: $white;
 
                     &::placeholder {
-                        color: $light-black;
+                        color: $placeholder-grey;
                     }
 
                     &:focus-visible {

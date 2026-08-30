@@ -103,7 +103,11 @@
     class:stack={!userState.isTabbed}
     transition:fade
 >
-    <div id="map" bind:this={container} class={isLoading ? "invisible" : ""}></div>
+    <div
+        id="map"
+        bind:this={container}
+        class={isLoading ? "invisible" : ""}
+    ></div>
     {#if isLoading}
         <div
             style="position:fixed; inset: 0; display:flex; align-items: center; justify-content: center;"
