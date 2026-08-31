@@ -96,6 +96,11 @@
         height: 100%;
         padding: $gap;
         gap: $gap;
+
+        @include web-component {
+            min-height: 0;
+            overflow-y: auto;
+        }
     }
 
     main {

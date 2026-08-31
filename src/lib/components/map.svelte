@@ -119,16 +119,17 @@
         display: flex;
         flex: 1;
         width: 100%;
+        grid-area: 1 / 1;
+        z-index: 0;
+        opacity: 1;
 
         @include web-app {
             min-height: 60vh;
         }
+
         @include web-component {
             min-height: 0;
         }
-        grid-area: 1 / 1;
-        z-index: 0;
-        opacity: 1;
 
         &.hidden {
             z-index: -1;

@@ -21,14 +21,6 @@
         grid-auto-rows: max-content;
         grid-area: 1 / 1;
         max-height: auto;
-
-        // In the app the page scrolls. web-component there is no page to scroll: the element
-        // is clipped to its box, so the list has to carry its own scrollport or the
-        // cards past the fold become unreachable.
-        @include web-component {
-            min-height: 0;
-            overflow-y: auto;
-        }
         z-index: 0;
         opacity: 1;
 
