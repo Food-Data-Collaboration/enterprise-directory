@@ -16,7 +16,7 @@
 <style lang="scss">
     svg {
         transform: translate(0, -33px);
-        fill: $danger-mid;
+        fill: $black;
     }
 
     span {

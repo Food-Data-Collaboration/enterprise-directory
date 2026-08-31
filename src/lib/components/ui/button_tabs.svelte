@@ -24,7 +24,7 @@
         />
         <label for="map_tab" title="Show map">
             <MapPin size="18" />
-            <span class="label">Map</span>
+            <span class="label">Map view</span>
         </label>
 
         <input
@@ -38,7 +38,7 @@
         />
         <label for="directory_tab" title="Show grid">
             <Grip size="18" />
-            <span class="label">Grid</span>
+            <span class="label">Grid view</span>
         </label>
         <div class="selection-pill"></div>
     </div>
@@ -46,18 +46,20 @@
 
 <style lang="scss">
     $tab-width-small: 40px;
-    $tab-width-large: 70px;
+    $tab-width-large: 110px;
 
     .button-group {
         position: relative;
         display: inline-flex;
-        background-color: $primary-mid;
+        background-color: $white;
         padding: 4px;
         border-radius: $radius-full;
         user-select: none;
+        width: fit-content;
+        box-shadow: $drop-shadow;
 
         &:has(:focus-visible) {
-            outline: 2px solid $secondary;
+            outline: 2px solid $black;
         }
 
         input[type="radio"] {
@@ -77,7 +79,7 @@
                 gap: $gap-xxsmall;
                 align-items: center;
                 justify-content: center;
-                width: $tab-width-small;
+                width: $tab-width-large;
                 height: $tab-width-small;
                 font-size: 14px;
                 font-weight: 500;
@@ -94,13 +96,13 @@
                     width: $tab-width-large;
                 }
 
-                .label {
-                    display: none;
+                // .label {
+                //     display: none;
 
-                    @include from($breakpoint-medium) {
-                        display: block;
-                    }
-                }
+                //     @include from($breakpoint-medium) {
+                //         display: block;
+                //     }
+                // }
             }
 
             &:is(input:checked) {
@@ -114,7 +116,7 @@
             }
 
             &:nth-of-type(2):checked ~ .selection-pill {
-                transform: translateX($tab-width-small);
+                transform: translateX($tab-width-large);
 
                 @include from($breakpoint-medium) {
                     transform: translateX($tab-width-large);
@@ -124,9 +126,9 @@
 
         .selection-pill {
             position: absolute;
-            width: $tab-width-small;
+            width: $tab-width-large;
             height: $tab-width-small;
-            background-color: $primary;
+            background-color: $black;
             border-radius: $radius-full;
             z-index: 1;
             transition: transform 200ms ease-in-out;

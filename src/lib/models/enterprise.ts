@@ -23,8 +23,7 @@ export class Enterprise {
         enterprise.logoUrl = data["dfc-b:logo"] ?? "";
         enterprise.addresses = (data["dfc-b:hasAddress"]?.["ldp:contains"] ?? [])
             .map((address) => Address.fromJSON(address));
-        const id = enterprise.id?.slice(-3).replaceAll('/', '1') ?? "";
-        enterprise.images = [`https://picsum.photos/seed/x${id}/1500/800`, `https://picsum.photos/seed/y${id}/800/800`];
+        enterprise.images = ["https://placehold.co/600x400", "https://placehold.co/600x400"];
 
         if (URL.canParse(enterprise.id))
             enterprise.profileId = new URL(enterprise.id).pathname

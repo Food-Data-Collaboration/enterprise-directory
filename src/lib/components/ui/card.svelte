@@ -28,7 +28,7 @@
                 href={link}
                 onclick={() => analytics.track("enterprise_profile_opened")}
             >
-                <h2>{title}</h2>
+                <h2 {title}>{title}</h2>
             </a>
         {:else}
             <h2>{title}</h2>
@@ -108,6 +108,9 @@
                     border: none;
                     padding: 0;
                     margin: 0;
+                    overflow: hidden;
+                    text-wrap: nowrap;
+                    text-overflow: ellipsis;
                 }
             }
         }

@@ -10,7 +10,7 @@ export class DirectoryState {
     isLoadingEnterprises = $state(true);
     showFilters = $state(false);
     filters = $state(new FilterState());
-    activeTab = $state<Tabs>("Map");
+    activeTab = $state<Tabs>("Directory");
     isTabbed = $state(true);
 
     init(promise: Promise<Response>) {

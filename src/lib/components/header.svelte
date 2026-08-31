@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { Search, SlidersHorizontal } from "@lucide/svelte";
-    import logo from "$lib/assets/lwa_icon.png";
+    import { Funnel } from "@lucide/svelte";
     import { getDirectoryState } from "$lib/models/state.svelte";
     import ButtonTabs from "./ui/button_tabs.svelte";
     import Notification from "./ui/notification.svelte";
@@ -19,25 +18,19 @@
 <header>
     <div id="header-main">
         <dir></dir>
-        <img id="head-logo" src={logo} alt="Landworkers Alliance logo" />
-        <div id="head-search">
-            <Search size="24" />
-            <input
-                type="text"
-                placeholder="Find a Landwordker's Alliance producer"
-            />
-            <button
-                id="filter-menu"
-                aria-label="Filters"
-                title="Filters"
-                placeholder="Find food"
-                class:active={userState.showFilters}
-                onclick={toggleFilters}
-            >
-                <SlidersHorizontal size="16" />
-            </button>
-            <ButtonTabs />
-        </div>
+
+        <button
+            id="filter-menu"
+            aria-label="Filters"
+            title="Filters"
+            placeholder="Find food"
+            class:active={userState.showFilters}
+            onclick={toggleFilters}
+        >
+            <Funnel size="16" />
+            Filter
+        </button>
+        <ButtonTabs />
     </div>
 
     {#if !userState.isLoadingEnterprises && userState.enterprises.length < 1}
@@ -58,14 +51,11 @@
 
         #header-main {
             display: flex;
-            flex-direction: column;
-            align-items: normal;
+            flex-direction: row;
+            align-items: center;
             justify-content: center;
+            gap: $gap-xsmall;
 
-            @include from($breakpoint-small) {
-                flex-direction: row;
-                align-items: center;
-            }
             #head-logo {
                 display: none;
                 user-select: none;
@@ -80,66 +70,28 @@
                 }
             }
 
-            #head-search {
-                position: relative;
-                grid-area: search;
-                display: inline-flex;
-                flex-direction: row;
-                flex: 1;
+            button {
+                display: flex;
+                justify-content: center;
                 align-items: center;
-                max-width: 768px;
-                padding: 0 0 0 $gap;
-                gap: $gap-xsmall;
+                gap: $gap-xxsmall;
+                right: $gap;
+                padding: $gap-small;
                 background-color: $white;
                 border-radius: $radius-full;
+                border: none;
+                outline-offset: -4px;
+                color: $black;
+                width: fit-content;
                 box-shadow: $drop-shadow;
-                transition: box-shadow 200ms ease-in;
 
-                &:has(input[type="text"]:focus-visible) {
+                &.active {
+                    background-color: $black;
+                    color: $white;
+                }
+
+                &:focus-visible {
                     outline: 2px solid $secondary;
-                    box-shadow: $cast-shadow;
-                }
-
-                &:hover {
-                    box-shadow: $cast-shadow;
-                }
-
-                input[type="text"] {
-                    flex: 1;
-                    min-width: 50px;
-                    line-height: $text-body;
-                    border: none;
-                    background-color: $white;
-
-                    &::placeholder {
-                        color: $placeholder-grey;
-                    }
-
-                    &:focus-visible {
-                        outline: none;
-                    }
-                }
-
-                button {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    right: $gap;
-                    padding: $gap-small;
-                    background-color: $transparent;
-                    border-radius: $radius-full;
-                    border: none;
-                    outline-offset: -4px;
-                    color: $black;
-
-                    &.active {
-                        background-color: $primary;
-                        color: $white;
-                    }
-
-                    &:focus-visible {
-                        outline: 2px solid $secondary;
-                    }
                 }
             }
         }

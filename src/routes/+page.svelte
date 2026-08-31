@@ -39,7 +39,7 @@
             display: flex;
             flex-shrink: 0;
             inset: 0;
-            z-index: 3;
+            z-index: 5;
             background-color: $white;
             width: 100%;
             transition: all 200ms ease-in-out;

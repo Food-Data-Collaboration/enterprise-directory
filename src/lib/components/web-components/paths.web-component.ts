@@ -1,10 +1,10 @@
 /**
- * `$app/paths` stand-in for the standalone web-component build.
+ * `$app/paths` stand-in for the web-app web-component build.
  *
  * The custom element has no SvelteKit router behind it, so there is no base
  * path to prepend and nothing to look routes up in. `resolve` just fills the
  * parameters into the route id, leaving links relative to whichever page the
- * element is embedded in.
+ * element is web-component in.
  */
 
 export const base = '';

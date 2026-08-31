@@ -4,20 +4,21 @@
     import Tag from "./ui/tag.svelte";
     import Carousel from "./ui/carousel.svelte";
     import type { Enterprise } from "$lib/models/enterprise";
-    import { fade } from "svelte/transition";
 
-    // The web component has nowhere to navigate back to, so it passes onback and gets a
-    // button instead of a link. Without it this stays the app's link home.
     let {
         enterprise,
         onback,
     }: { enterprise: Enterprise; onback?: () => void } = $props();
 </script>
 
-<article transition:fade>
+<article>
     <header>
         {#if onback}
-            <button type="button" aria-label="Back to directory" onclick={onback}>
+            <button
+                type="button"
+                aria-label="Back to directory"
+                onclick={onback}
+            >
                 <ArrowLeft size="28" />
             </button>
         {:else}

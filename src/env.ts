@@ -15,7 +15,11 @@ export const variables = defineEnvVars({
         public: true,
         static: true
     },
-    DEFAULT_MAP_CENTRE: {
+    DEFAULT_MAP_CENTRE_LNG: {
+        public: true,
+        static: true
+    },
+    DEFAULT_MAP_CENTRE_LAT: {
         public: true,
         static: true
     },
@@ -44,8 +48,8 @@ export const variables = defineEnvVars({
 type AssertTrue<T extends true> = T;
 export type _EnvKeysInSync = AssertTrue<
     [PublicEnvKey] extends [keyof typeof variables]
-        ? [keyof typeof variables] extends [PublicEnvKey]
-            ? true
-            : false
-        : false
+    ? [keyof typeof variables] extends [PublicEnvKey]
+    ? true
+    : false
+    : false
 >;

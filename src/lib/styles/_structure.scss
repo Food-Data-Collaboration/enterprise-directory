@@ -26,13 +26,13 @@ $web-component: false !default;
     }
 }
 
-@mixin embedded {
+@mixin web-component {
     @if $web-component {
         @content;
     }
 }
 
-@mixin standalone {
+@mixin web-app {
     @if not $web-component {
         @content;
     }
