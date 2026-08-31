@@ -1,10 +1,64 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { resolve } from 'path';
 import { publicEnv } from './src/env.config';
 import svelteConfig from './svelte.config.js';
 
 const shims = resolve('./src/lib/components/web-components');
+
+const COMPONENT_STYLES_TOKEN = '__ENTERPRISE_DIRECTORY_COMPONENT_STYLES__';
+
+function inlineComponentStyles(): Plugin {
+	return {
+		name: 'inline-component-styles',
+		enforce: 'post',
+		generateBundle(_options, bundle) {
+			const stylesheets = Object.keys(bundle).filter((file) => file.endsWith('.css'));
+
+			const css = stylesheets
+				.map((file) => {
+					const { source } = bundle[file] as { source: string | Uint8Array };
+					delete bundle[file];
+					return typeof source === 'string' ? source : Buffer.from(source).toString('utf8');
+				})
+				.join('\n');
+
+			if (css.length === 0) {
+				throw new Error(
+					'Cannot build the web component: rolldown extracted no component CSS. ' +
+					'Check that customElement is still scoped to the root component, or the ' +
+					'components compile in injected mode and their styles never reach the shadow root.'
+				);
+			}
+
+			const chunks = Object.values(bundle).filter(
+				(output) => output.type === 'chunk' && output.code.includes(COMPONENT_STYLES_TOKEN)
+			);
+
+			if (chunks.length === 0) {
+				throw new Error(
+					`Cannot build the web component: ${COMPONENT_STYLES_TOKEN} is not in the bundle. ` +
+					'styles.web-component.ts must ship it in place of the component CSS.'
+				);
+			}
+
+			for (const chunk of chunks) {
+				if (chunk.type !== 'chunk') continue;
+				chunk.code = chunk.code.replaceAll(COMPONENT_STYLES_TOKEN, escapeStringLiteral(css));
+			}
+		}
+	};
+}
+
+function escapeStringLiteral(css: string): string {
+	return css
+		.replace(/\\/g, '\\\\')
+		.replace(/["'`$]/g, (character) => `\\${character}`)
+		.replace(/\n/g, '\\n')
+		.replace(/\r/g, '\\r')
+		.replace(/\u2028/g, '\\u2028')
+		.replace(/\u2029/g, '\\u2029');
+}
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), '');
@@ -25,12 +79,13 @@ export default defineConfig(({ mode }) => {
 		plugins: [
 			svelte({
 				preprocess: svelteConfig.preprocess,
-				// Only this build wants it: it is what makes <svelte:options customElement>
-				// register the tag, and it puts each component's styles in the bundle so
-				// they can be injected into the shadow root. The app deliberately does not
-				// set it — there it would cost a flash of unstyled content on first paint.
-				compilerOptions: { ...svelteConfig.compilerOptions, customElement: true }
-			})
+				compilerOptions: {
+					...svelteConfig.compilerOptions,
+					customElement: ({ filename }) =>
+						filename.endsWith('enterprise-directory.svelte')
+				}
+			}),
+			inlineComponentStyles()
 		],
 		define: Object.fromEntries(
 			Object.keys(publicEnv).map((key) => [

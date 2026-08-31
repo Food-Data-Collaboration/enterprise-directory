@@ -20,7 +20,6 @@
     const userState = getDirectoryState();
 
     onMount(async () => {
-        console.log("mount");
         await import("maplibre-gl/dist/maplibre-gl.css");
         map = new maplibregl.Map({
             // The element, not its id: maplibre resolves a string container with
@@ -54,7 +53,6 @@
     });
 
     $effect(() => {
-        console.log("effect");
         if (map != null) {
             userState.enterprises
                 .filter(
