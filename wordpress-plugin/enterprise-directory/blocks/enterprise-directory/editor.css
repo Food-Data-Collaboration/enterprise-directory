@@ -1,0 +1,38 @@
+/* Editor-only styles. The component itself is fully styled inside its shadow root. */
+
+.wp-enterprise-directory__preview {
+	height: 100%;
+	width: 100%;
+	/* Keep editor clicks on the block, not on the map or directory inside it. */
+	pointer-events: none;
+}
+
+.wp-enterprise-directory__preview enterprise-directory {
+	display: block;
+	height: 100%;
+}
+
+.wp-enterprise-directory__placeholder {
+	display: flex;
+	height: 100%;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	border: 1px dashed #949494;
+	border-radius: 2px;
+	background: #f0f0f0;
+	color: #1e1e1e;
+	text-align: center;
+}
+
+.wp-enterprise-directory__placeholder .dashicons {
+	width: 32px;
+	height: 32px;
+	font-size: 32px;
+}
+
+.wp-enterprise-directory__placeholder span:last-child {
+	color: #757575;
+	font-size: 12px;
+}

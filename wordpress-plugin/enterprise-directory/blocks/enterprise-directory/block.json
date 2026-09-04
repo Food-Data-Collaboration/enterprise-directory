@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "platypus/enterprise-directory",
+	"version": "1.0.0",
+	"title": "Enterprise Directory",
+	"category": "embed",
+	"icon": "location-alt",
+	"description": "Embed the Enterprise Directory in a container you size. The directory fills the container.",
+	"keywords": [ "directory", "enterprise", "map", "platypus" ],
+	"textdomain": "enterprise-directory",
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"align": [ "wide", "full" ],
+		"spacing": {
+			"margin": true
+		}
+	},
+	"attributes": {
+		"height": {
+			"type": "string",
+			"default": "700px"
+		},
+		"width": {
+			"type": "string",
+			"default": "100%"
+		},
+		"livePreview": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"editorScript": "enterprise-directory-editor",
+	"editorStyle": "file:./editor.css"
+}
