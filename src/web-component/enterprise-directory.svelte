@@ -18,12 +18,12 @@
         setDirectoryState,
     } from "$lib/models/state.svelte";
     import { onMount } from "svelte";
-    import { DATA_HOST } from "$app/env/public";
     import Filters from "$lib/components/filters.svelte";
     import Directory from "$lib/components/directory.svelte";
     import Map from "$lib/components/map.svelte";
     import Profile from "$lib/components/profile.svelte";
     import { installFont, shadowStyles } from "./styles.web-component";
+    import { DATA_HOST } from "$app/env/public";
 
     const userState = setDirectoryState(new DirectoryState());
 
