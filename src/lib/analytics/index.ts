@@ -1,4 +1,6 @@
-import { posthogAnalytics } from './posthog';
+import { dev } from '$app/env';
+import { PosthogAnalytics } from './posthog';
+import { LocalAnalytics } from './local';
 
 export interface Analytics {
     track(event: string, properties?: Record<string, unknown>): void;
@@ -6,13 +8,4 @@ export interface Analytics {
     catch(error: unknown, properties?: Record<string, unknown>): void;
 }
 
-export const analytics: Analytics = {
-    track: (event, properties) =>
-        posthogAnalytics.track(event, properties),
-
-    identify: (userId, properties) =>
-        posthogAnalytics.identify(userId, properties),
-
-    catch: (error: unknown, properties) =>
-        posthogAnalytics.catch(error, properties)
-};
+export const analytics: Analytics = dev ? new LocalAnalytics() : new PosthogAnalytics(); 

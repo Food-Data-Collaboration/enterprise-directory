@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { publicEnv } from './src/env.config';
 import svelteConfig from './svelte.config.js';
 
-const shims = resolve('./src/lib/components/web-components');
+const shims = resolve('./src/web-component');
 
 const COMPONENT_STYLES_TOKEN = '__ENTERPRISE_DIRECTORY_COMPONENT_STYLES__';
 
@@ -113,7 +113,7 @@ export default defineConfig(({ mode }) => {
 		},
 		build: {
 			lib: {
-				entry: resolve(__dirname, 'src/lib/components/web-components/enterprise-directory.ts'),
+				entry: resolve(__dirname, 'src/web-component/enterprise-directory.ts'),
 				name: 'enterprise-directory',
 				fileName: 'enterprise-directory',
 				formats: ['es' as const]

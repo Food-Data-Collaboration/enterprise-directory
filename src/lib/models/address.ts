@@ -20,8 +20,10 @@ export class Address {
         address.street = data["dfc-b:hasStreet"] ?? "";
         address.region = data["dfc-b:region"] ?? "";
         address.formatted = `${address.city}, ${address.region} ${address.postalCode}`;
+
         const lng = Address.toCoordinate(data["dfc-b:longitude"]);
         const lat = Address.toCoordinate(data["dfc-b:latitude"]);
+
         if (lng !== null && lat !== null)
             address.lnglat = { lng, lat }
 
@@ -29,9 +31,11 @@ export class Address {
     }
 
     static toCoordinate(value: number | string | undefined): number | null {
-        if (value === undefined || value === "") return null;
+        if (value === undefined || value === "")
+            return null;
 
         const coordinate = Number(value);
+
         return Number.isFinite(coordinate) ? coordinate : null;
     }
 }
