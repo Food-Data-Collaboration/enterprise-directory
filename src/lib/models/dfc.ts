@@ -20,4 +20,6 @@ export interface DfcEnterprise {
     "dfc-b:hasDescription"?: string;
     "dfc-b:logo"?: string;
     "dfc-b:hasAddress"?: LdpContainer<DfcAddress>;
+
+    "x-ed:images"?: string[];
 }

@@ -6,10 +6,10 @@
 
 <style lang="scss">
     span {
-        background-color: $light-grey;
+        background-color: $black;
         border-radius: 8px;
         padding: $gap-xsmall;
-        color: white;
+        color: $white;
         line-height: $text-body;
         height: 32px;
         user-select: none;

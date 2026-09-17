@@ -23,7 +23,7 @@
     import Map from "$lib/components/map.svelte";
     import Profile from "$lib/components/profile.svelte";
     import { installFont, shadowStyles } from "./styles.web-component";
-    import { DATA_HOST } from "$app/env/public";
+    import { enterpriseSource } from "$lib/data";
 
     const userState = setDirectoryState(new DirectoryState());
 
@@ -49,8 +49,7 @@
     onMount(() => {
         installFont();
 
-        const enterprisePromise = fetch(`${DATA_HOST}/enterprises/`);
-        userState.init(enterprisePromise);
+        userState.init(enterpriseSource.fetchEnterprises());
 
         layout.addEventListener("click", openProfile);
         return () => layout.removeEventListener("click", openProfile);

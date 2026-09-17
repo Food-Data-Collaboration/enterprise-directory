@@ -23,7 +23,7 @@ export class Enterprise {
         enterprise.logoUrl = data["dfc-b:logo"] ?? "";
         enterprise.addresses = (data["dfc-b:hasAddress"]?.["ldp:contains"] ?? [])
             .map((address) => Address.fromJSON(address));
-        enterprise.images = ["https://placehold.co/600x400", "https://placehold.co/600x400"];
+        enterprise.images = data["x-ed:images"]!;
 
         if (URL.canParse(enterprise.id))
             enterprise.profileId = new URL(enterprise.id).pathname

@@ -13,10 +13,12 @@
     image={enterprise.images[0]}
     link={resolve("/enterprises/[id]", { id: enterprise.profileId })}
 >
-    <p class="card-location">
+    <div style="display:flex; gap: 8px;">
         <MapPin />
-        {enterprise.addresses[0]?.formatted}
-    </p>
+        <p class="card-location">
+            {enterprise.addresses[0]?.formatted}
+        </p>
+    </div>
     <div id="tags">
         {#each enterprise.categories as tag (tag)}
             <Tag text={tag} />
@@ -27,14 +29,19 @@
 
 <style lang="scss">
     p {
-        display: flex;
-
         &.card-location {
             gap: $gap-xxsmall;
             margin-left: -2px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            line-clamp: 1;
+            -webkit-line-clamp: 1;
+            overflow: hidden;
         }
 
         &.card-description {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
             font-size: $text-body-small;
             line-clamp: 2;
             -webkit-line-clamp: 2;

@@ -1,8 +1,8 @@
 import type { LayoutLoad } from './$types';
-import { DATA_HOST } from "$app/env/public"
+import { enterpriseSource } from '$lib/data';
 
 export const load: LayoutLoad = async ({ fetch }) => {
 	return {
-		enterprisePromise: fetch(`${DATA_HOST}/enterprises/`)
+		enterprisePromise: enterpriseSource.fetchEnterprises(fetch)
 	};
 }

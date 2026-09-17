@@ -38,13 +38,13 @@ export const variables = defineEnvVars({
         static: false,
         schema: optionalString
     },
+    USE_DUMMY_DATA: {
+        public: true,
+        static: true,
+        schema: optionalString
+    },
 });
 
-/**
- * Stops this schema and `src/env.config.ts` drifting apart. Without it, a
- * variable added here would be missing from the web-component build, where it
- * would come through as `null` at runtime rather than as a build failure.
- */
 type AssertTrue<T extends true> = T;
 export type _EnvKeysInSync = AssertTrue<
     [PublicEnvKey] extends [keyof typeof variables]
