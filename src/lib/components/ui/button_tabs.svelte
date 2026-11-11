@@ -2,10 +2,12 @@
     import { getDirectoryState } from "$lib/models/state.svelte";
     import { Grip, MapPin } from "@lucide/svelte";
     import { analytics } from "$lib/analytics";
+    import type { Tabs } from "$lib/models/tabs";
+    import { ENABLE_PRODUCTS } from "$app/env/public";
 
     const userState = getDirectoryState();
 
-    function changeView(view: "Map" | "Directory") {
+    function changeView(view: Tabs) {
         userState.activeTab = view;
         analytics.track("directory_view_changed", { view });
     }
@@ -36,17 +38,33 @@
             checked={userState.activeTab === "Directory"}
             onchange={() => changeView("Directory")}
         />
-        <label for="directory_tab" title="Show grid">
+        <label for="directory_tab" title="Show orgranisations">
             <Grip size="18" />
-            <span class="label">Grid view</span>
+            <span class="label">Organisations</span>
         </label>
+
+        {#if ENABLE_PRODUCTS === "true"}
+            <input
+                type="radio"
+                id="product_tab"
+                name="tabs"
+                aria-checked={userState.activeTab == "Product"}
+                value="Product"
+                checked={userState.activeTab === "Product"}
+                onchange={() => changeView("Product")}
+            />
+            <label for="product_tab" title="Show products">
+                <Grip size="18" />
+                <span class="label">Products</span>
+            </label>
+        {/if}
         <div class="selection-pill"></div>
     </div>
 {/if}
 
 <style lang="scss">
     $tab-width-small: 40px;
-    $tab-width-large: 110px;
+    $tab-width-large: 120px;
 
     .button-group {
         position: relative;
@@ -95,46 +113,12 @@
                 @include from($breakpoint-medium) {
                     width: $tab-width-large;
                 }
-
-                // .label {
-                //     display: none;
-
-                //     @include from($breakpoint-medium) {
-                //         display: block;
-                //     }
-                // }
             }
 
             &:is(input:checked) {
                 & + label {
-                    color: $white;
+                    text-decoration: underline;
                 }
-            }
-
-            &:nth-of-type(1):checked ~ .selection-pill {
-                transform: translateX(0);
-            }
-
-            &:nth-of-type(2):checked ~ .selection-pill {
-                transform: translateX($tab-width-large);
-
-                @include from($breakpoint-medium) {
-                    transform: translateX($tab-width-large);
-                }
-            }
-        }
-
-        .selection-pill {
-            position: absolute;
-            width: $tab-width-large;
-            height: $tab-width-small;
-            background-color: $black;
-            border-radius: $radius-full;
-            z-index: 1;
-            transition: transform 200ms ease-in-out;
-
-            @include from($breakpoint-medium) {
-                width: $tab-width-large;
             }
         }
     }

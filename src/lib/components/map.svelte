@@ -64,7 +64,7 @@
                     let customMarker = document.createElement("span");
                     mount(MapMarker, {
                         target: customMarker,
-                        props: { image: enterprise.images[0] },
+                        props: { image: enterprise.logoUrl },
                     });
 
                     let popupElement = document.createElement("div");

@@ -1,6 +1,6 @@
-import type { DfcEnterprise, LdpContainer } from "$lib/models/dfc";
+import type { OrganizationData } from "$lib/data/ldkit/schemas";
 
-const BASE = "https://demo.enterprise-directory.invalid/enterprises";
+const BASE = "https://demo.enterprise-directory.invalid/organizations";
 
 interface DemoRecord {
     slug: string;
@@ -14,6 +14,7 @@ interface DemoRecord {
     lat: number;
 }
 
+// Used as dummy data for testing and when backend is unavailable
 const records = [
     {
         slug: "borough-bread-collective",
@@ -257,36 +258,41 @@ const records = [
     }
 ] satisfies DemoRecord[];
 
-function toDfcEnterprise(record: DemoRecord): DfcEnterprise {
+export interface DummyOrganization {
+    data: OrganizationData;
+    images: string[];
+}
+
+function toDummyOrganization(record: DemoRecord): DummyOrganization {
     const id = `${BASE}/${record.slug}`;
 
     return {
-        "@id": id,
-        "dfc-b:name": record.name,
-        "dfc-b:hasDescription": record.description,
-        "dfc-b:logo": `https://picsum.photos/seed/${record.slug}-logo/96/96`,
-        "x-ed:images": [1, 2, 3].map(
+        data: {
+            $id: id,
+            name: record.name,
+            description: record.description,
+            logo: `https://picsum.photos/seed/${record.slug}-logo/96/96`,
+            hasAddress: {
+                $id: `${id}/addresses`,
+                contains: [
+                    {
+                        $id: `${id}/addresses/1`,
+                        street: record.street,
+                        city: record.city,
+                        region: record.region,
+                        postcode: record.postalCode,
+                        country: "United Kingdom",
+                        longitude: String(record.lng),
+                        latitude: String(record.lat)
+                    }
+                ]
+            },
+            supplies: null
+        },
+        images: [1, 2, 3].map(
             (index) => `https://picsum.photos/seed/${record.slug}-${index}/600/400`
-        ),
-        "dfc-b:hasAddress": {
-            "@id": `${id}/addresses`,
-            "ldp:contains": [
-                {
-                    "@id": `${id}/addresses/1`,
-                    "dfc-b:hasStreet": record.street,
-                    "dfc-b:hasCity": record.city,
-                    "dfc-b:region": record.region,
-                    "dfc-b:hasPostalCode": record.postalCode,
-                    "dfc-b:hasCountry": "United Kingdom",
-                    "dfc-b:longitude": record.lng,
-                    "dfc-b:latitude": record.lat
-                }
-            ]
-        }
+        )
     };
 }
 
-export const ukEnterprises: LdpContainer<DfcEnterprise> = {
-    "@id": `${BASE}/`,
-    "ldp:contains": records.map(toDfcEnterprise)
-};
+export const ukEnterprises: DummyOrganization[] = records.map(toDummyOrganization);

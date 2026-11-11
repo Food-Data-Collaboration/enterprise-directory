@@ -1,29 +1,31 @@
 import { Address } from "$lib/models/address";
-import type { DfcEnterprise } from "$lib/models/dfc";
+import type { OrganizationData } from "$lib/data/ldkit/schemas";
+import { Product } from "./product";
 
 export class Enterprise {
     id: string = "";
     name: string = "";
     addresses: Address[] = [];
+    products: Product[] = [];
     description: string = "";
     profileId: string = "";
     categories: string[] = ["Bakery", "Pastries", "Bread"];
     logoUrl: string = "";
     images: string[] = [];
 
-    static fromJSON(data: DfcEnterprise): Enterprise {
+    static fromLdkit(data: OrganizationData, images: string[] = []): Enterprise {
         const enterprise = new Enterprise();
 
-        if (!data["dfc-b:name"])
+        if (!data.name)
             return enterprise;
 
-        enterprise.id = data["@id"] ?? "";
-        enterprise.name = data["dfc-b:name"];
-        enterprise.description = data["dfc-b:hasDescription"] ?? "";
-        enterprise.logoUrl = data["dfc-b:logo"] ?? "";
-        enterprise.addresses = (data["dfc-b:hasAddress"]?.["ldp:contains"] ?? [])
-            .map((address) => Address.fromJSON(address));
-        enterprise.images = data["x-ed:images"]!;
+        enterprise.id = data.$id;
+        enterprise.name = data.name;
+        enterprise.description = data.description ?? "";
+        enterprise.logoUrl = data.logo ?? "";
+        enterprise.addresses = (data.hasAddress?.contains ?? [])
+            .map((address) => Address.fromLdkit(address));
+        enterprise.images = images;
 
         if (URL.canParse(enterprise.id))
             enterprise.profileId = new URL(enterprise.id).pathname
@@ -31,6 +33,8 @@ export class Enterprise {
                 .filter(Boolean)
                 .pop() ?? "";
 
+        enterprise.products = (data.supplies?.contains ?? [])
+            .map((product) => Product.fromLdkit(product, enterprise.profileId, enterprise.name));
         return enterprise;
     }
 }

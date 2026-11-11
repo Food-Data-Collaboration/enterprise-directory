@@ -4,6 +4,7 @@
     import { MapPin } from "@lucide/svelte";
     import Card from "$lib/components/ui/card.svelte";
     import Tag from "$lib/components/ui/tag.svelte";
+    import { analytics } from "$lib/analytics";
 
     let { enterprise }: { enterprise: Enterprise } = $props();
 </script>
@@ -12,6 +13,11 @@
     title={enterprise.name}
     image={enterprise.images[0]}
     link={resolve("/enterprises/[id]", { id: enterprise.profileId })}
+    analyticsCallback={() =>
+        analytics.track("enterprise_card_clicked", {
+            enterpriseId: enterprise.id,
+            action: "Open enterprise profile",
+        })}
 >
     <div style="display:flex; gap: 8px;">
         <MapPin />
@@ -46,6 +52,7 @@
             line-clamp: 2;
             -webkit-line-clamp: 2;
             overflow: hidden;
+            height: 42px;
         }
     }
 

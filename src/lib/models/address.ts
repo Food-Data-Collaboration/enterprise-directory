@@ -1,28 +1,28 @@
-import type { DfcAddress } from "$lib/models/dfc";
+import type { AddressData } from "$lib/data/ldkit/schemas";
 
 export class Address {
     id: string = "";
     city: string = "";
     country: string = "";
-    postalCode: string = "";
+    postcode: string = "";
     street: string = "";
     lnglat: { lng: number, lat: number } | null = null;
     region: string = "";
     formatted = "";
 
-    static fromJSON(data: DfcAddress): Address {
+    static fromLdkit(data: AddressData): Address {
         const address = new Address();
 
-        address.id = data["@id"] ?? "";
-        address.city = data["dfc-b:hasCity"] ?? "";
-        address.country = data["dfc-b:hasCountry"] ?? "";
-        address.postalCode = data["dfc-b:hasPostalCode"] ?? "";
-        address.street = data["dfc-b:hasStreet"] ?? "";
-        address.region = data["dfc-b:region"] ?? "";
-        address.formatted = `${address.city}, ${address.region} ${address.postalCode}`;
+        address.id = data.$id;
+        address.city = data.city ?? "";
+        address.country = data.country ?? "";
+        address.postcode = data.postcode ?? "";
+        address.street = data.street ?? "";
+        address.region = data.region ?? "";
+        address.formatted = `${address.street}${address.street ? ',' : ''} ${address.city}${address.city ? ',' : ''} ${address.region} ${address.postcode}`;
 
-        const lng = Address.toCoordinate(data["dfc-b:longitude"]);
-        const lat = Address.toCoordinate(data["dfc-b:latitude"]);
+        const lng = Address.toCoordinate(data.longitude);
+        const lat = Address.toCoordinate(data.latitude);
 
         if (lng !== null && lat !== null)
             address.lnglat = { lng, lat }
@@ -30,8 +30,8 @@ export class Address {
         return address;
     }
 
-    static toCoordinate(value: number | string | undefined): number | null {
-        if (value === undefined || value === "")
+    static toCoordinate(value: number | string | null | undefined): number | null {
+        if (value === undefined || value === null || value === "")
             return null;
 
         const coordinate = Number(value);

@@ -23,6 +23,10 @@ export const variables = defineEnvVars({
         public: true,
         static: true
     },
+    ENABLE_PRODUCTS: {
+        public: true,
+        static: true
+    },
     POSTHOG_PROJECT_TOKEN: {
         public: true,
         static: false,

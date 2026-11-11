@@ -1,1 +1,1 @@
-export type Tabs = "Map" | "Directory";
+export type Tabs = "Map" | "Directory" | "Product";

@@ -1,12 +1,11 @@
+import { Enterprise } from "$lib/models/enterprise";
 import { ukEnterprises } from "./uk_enterprises";
 import type { EnterpriseSource } from ".";
 
 export class DummyEnterpriseSource implements EnterpriseSource {
-    fetchEnterprises(): Promise<Response> {
+    fetchEnterprises(): Promise<Enterprise[]> {
         return Promise.resolve(
-            new Response(JSON.stringify(ukEnterprises), {
-                headers: { "content-type": "application/json" }
-            })
+            ukEnterprises.map(({ data, images }) => Enterprise.fromLdkit(data, images))
         );
     }
 }

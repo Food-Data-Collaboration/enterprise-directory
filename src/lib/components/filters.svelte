@@ -1,6 +1,6 @@
 <script lang="ts">
     import { FilterState } from "$lib/models/filter_state.svelte";
-    import { ArrowRight, Search, X } from "@lucide/svelte";
+    import { ArrowRight, X } from "@lucide/svelte";
     import ButtonCheckbox from "./ui/button_checkbox.svelte";
     import { getDirectoryState } from "$lib/models/state.svelte";
     import { analytics } from "$lib/analytics";
@@ -45,13 +45,6 @@
             <button id="clear-filters" class="btn" onclick={clearFilters}>
                 Clear all
             </button>
-        </div>
-        <div id="head-search">
-            <Search size="24" />
-            <input
-                type="text"
-                placeholder="Find a Landwordker's Alliance producer"
-            />
         </div>
     </header>
 
@@ -228,47 +221,6 @@
             display: inline-flex;
             flex-direction: row;
             justify-content: space-between;
-        }
-
-        #head-search {
-            position: relative;
-            grid-area: search;
-            display: inline-flex;
-            flex-direction: row;
-            flex: 1;
-            align-items: center;
-            max-width: 768px;
-            padding: $gap;
-            gap: $gap-xsmall;
-            background-color: $white;
-            border-radius: $radius-full;
-            box-shadow: $drop-shadow;
-            transition: box-shadow 200ms ease-in;
-
-            &:has(input[type="text"]:focus-visible) {
-                outline: 2px solid $secondary;
-                box-shadow: $cast-shadow;
-            }
-
-            &:hover {
-                box-shadow: $cast-shadow;
-            }
-
-            input[type="text"] {
-                flex: 1;
-                min-width: 50px;
-                line-height: $text-body;
-                border: none;
-                background-color: $white;
-
-                &::placeholder {
-                    color: $placeholder-grey;
-                }
-
-                &:focus-visible {
-                    outline: none;
-                }
-            }
         }
     }
 

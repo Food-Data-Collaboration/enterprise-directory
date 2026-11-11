@@ -13,7 +13,7 @@
     </aside>
     <section>
         <Map hidden={userState.activeTab != "Map"} />
-        <Directory hidden={userState.activeTab != "Directory"} />
+        <Directory hidden={userState.activeTab == "Map"} />
     </section>
 </main>
 

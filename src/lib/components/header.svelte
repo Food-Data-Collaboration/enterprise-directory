@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Funnel } from "@lucide/svelte";
+    import { Funnel, Search } from "@lucide/svelte";
     import { getDirectoryState } from "$lib/models/state.svelte";
     import ButtonTabs from "./ui/button_tabs.svelte";
     import Notification from "./ui/notification.svelte";
@@ -18,19 +18,24 @@
 <header>
     <div id="header-main">
         <dir></dir>
-
-        <button
-            id="filter-menu"
-            aria-label="Filters"
-            title="Filters"
-            placeholder="Find food"
-            class:active={userState.showFilters}
-            onclick={toggleFilters}
-        >
-            <Funnel size="16" />
-            Filter
-        </button>
-        <ButtonTabs />
+        <div id="head-tabs">
+            <button
+                id="filter-menu"
+                aria-label="Filters"
+                title="Filters"
+                placeholder="Find food"
+                class:active={userState.showFilters}
+                onclick={toggleFilters}
+            >
+                <Funnel size="16" />
+                Filter
+            </button>
+            <ButtonTabs />
+        </div>
+        <div id="head-search">
+            <Search size="24" />
+            <input type="text" placeholder="Search for a location" />
+        </div>
     </div>
 
     {#if !userState.isLoadingEnterprises && userState.enterprises.length < 1}
@@ -50,11 +55,16 @@
         flex-direction: column;
 
         #header-main {
-            display: flex;
-            flex-direction: row;
+            display: grid;
             align-items: center;
             justify-content: center;
             gap: $gap-xsmall;
+            @include from($breakpoint-small) {
+                grid-template-columns: 66% 33%;
+            }
+            @include from($breakpoint-medium) {
+                grid-template-columns: 25% 50% 25%;
+            }
 
             #head-logo {
                 display: none;
@@ -67,6 +77,51 @@
 
                 @include from($breakpoint-small) {
                     display: block;
+                }
+            }
+            #head-tabs {
+                display: inline-flex;
+                justify-content: center;
+                gap: $gap;
+            }
+
+            #head-search {
+                position: relative;
+                display: inline-flex;
+                flex-direction: row;
+                flex: 1;
+                align-items: center;
+                max-width: 768px;
+                padding: $gap;
+                gap: $gap-xsmall;
+                background-color: $white;
+                border-radius: $radius-full;
+                box-shadow: $drop-shadow;
+                transition: box-shadow 200ms ease-in;
+
+                &:has(input[type="text"]:focus-visible) {
+                    outline: 2px solid $secondary;
+                    box-shadow: $cast-shadow;
+                }
+
+                &:hover {
+                    box-shadow: $cast-shadow;
+                }
+
+                input[type="text"] {
+                    flex: 1;
+                    min-width: 50px;
+                    line-height: $text-body;
+                    border: none;
+                    background-color: $white;
+
+                    &::placeholder {
+                        color: $placeholder-grey;
+                    }
+
+                    &:focus-visible {
+                        outline: none;
+                    }
                 }
             }
 

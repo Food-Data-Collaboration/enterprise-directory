@@ -27,7 +27,7 @@
 
     const userState = setDirectoryState(new DirectoryState());
 
-    const ENTERPRISE_PATH = /^\/enterprises\/(.+)$/;
+    const ENTERPRISE_PATH = /^\/organizations\/(.+)$/;
 
     let layout: HTMLDivElement;
 

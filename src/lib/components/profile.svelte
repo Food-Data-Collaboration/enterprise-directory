@@ -4,6 +4,8 @@
     import Tag from "./ui/tag.svelte";
     import Carousel from "./ui/carousel.svelte";
     import type { Enterprise } from "$lib/models/enterprise";
+    import CardProduct from "./ui/card_product.svelte";
+    import { ENABLE_PRODUCTS } from "$app/env/public";
 
     let {
         enterprise,
@@ -42,6 +44,20 @@
         {/each}
     </div>
     <p class="description">{enterprise.description}</p>
+
+    {#if ENABLE_PRODUCTS === "true" && enterprise.products.length > 0}
+        <section>
+            {#each enterprise.products as product, index (index)}
+                <CardProduct
+                    {product}
+                    link={resolve("/products/[id]", {
+                        id: product.profileId,
+                    })}
+                    landscape={true}
+                />
+            {/each}
+        </section>
+    {/if}
 </article>
 
 <style lang="scss">
@@ -101,6 +117,35 @@
             display: inline-flex;
             gap: $gap-xsmall;
             margin-top: $gap-xsmall;
+        }
+    }
+
+    section {
+        display: grid;
+        gap: $gap-large;
+        grid-template-columns: 1fr;
+        grid-auto-rows: max-content;
+        grid-area: 1 / 1;
+        max-height: auto;
+        z-index: 0;
+        opacity: 1;
+
+        @include from($breakpoint-small) {
+            grid-template-columns: 1fr;
+        }
+
+        @include from($breakpoint-medium) {
+            grid-template-columns: 1fr;
+        }
+
+        @include from($breakpoint-large) {
+            grid-template-columns: 1fr 1fr;
+        }
+        @include from($breakpoint-xlarge) {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        @include from($breakpoint-xxlarge) {
+            grid-template-columns: 1fr 1fr 1fr;
         }
     }
 </style>

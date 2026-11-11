@@ -1,16 +1,30 @@
 <script lang="ts">
     import { getDirectoryState } from "$lib/models/state.svelte";
     import CardEnterprise from "./ui/card_enterprise.svelte";
+    import CardProduct from "./ui/card_product.svelte";
 
+    import { resolve } from "$app/paths";
     let { hidden }: { hidden: boolean } = $props();
 
     const userState = getDirectoryState();
 </script>
 
 <article id="directory-view" class:hidden class:sidebar={userState.showFilters}>
-    {#each userState.enterprises as enterprise, index (index)}
-        <CardEnterprise {enterprise} />
-    {/each}
+    {#if userState.activeTab == "Directory"}
+        {#each userState.enterprises as enterprise, index (index)}
+            <CardEnterprise {enterprise} />
+        {/each}
+    {/if}
+    {#if userState.activeTab == "Product"}
+        {#each userState.products as product, index (index)}
+            <CardProduct
+                {product}
+                link={resolve("/products/[id]", {
+                    id: product.profileId,
+                })}
+            />
+        {/each}
+    {/if}
 </article>
 
 <style lang="scss">

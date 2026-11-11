@@ -1,22 +1,25 @@
 <script lang="ts">
     import { type Snippet } from "svelte";
-    import { analytics } from "$lib/analytics";
     import type { ResolvedPathname } from "$app/types";
 
     let {
         title,
         image,
         link,
+        landscape,
+        analyticsCallback,
         children,
     }: {
         title: string;
         image?: string;
         link?: ResolvedPathname;
+        landscape?: boolean;
+        analyticsCallback: () => void;
         children: Snippet;
     } = $props();
 </script>
 
-<div class="card">
+<div class:landscape class="card">
     {#if image}
         <div class="card-image">
             <img src={image} alt={title + " marketing image"} />
@@ -24,10 +27,7 @@
     {/if}
     <section>
         {#if link}
-            <a
-                href={link}
-                onclick={() => analytics.track("enterprise_profile_opened")}
-            >
+            <a href={link} onclick={() => analyticsCallback()}>
                 <h2 {title}>{title}</h2>
             </a>
         {:else}
@@ -63,6 +63,20 @@
 
         &:focus-within {
             outline: 2px solid $secondary;
+        }
+
+        &.landscape {
+            flex-direction: row;
+            min-height: 150px;
+            gap: $gap;
+
+            .card-image {
+                width: 50%;
+            }
+            section {
+                width: 50%;
+                padding: $gap $gap $gap 0;
+            }
         }
 
         .card-image {
