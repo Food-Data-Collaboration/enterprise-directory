@@ -15,8 +15,15 @@ export class DirectoryState {
     activeTab = $state<Tabs>("Directory");
     isTabbed = $state(true);
 
-    init(promise: Promise<Enterprise[]>) {
-        this.isLoadingEnterprises = true;
+    init(promise: Promise<Enterprise[]>, cached: Enterprise[] | null = null) {
+        // Stale-while-revalidate: show the last known data straight away and
+        // let the fresh fetch replace it.
+        if (cached?.length) {
+            this.enterprises = cached;
+            this.products = cached.flatMap((e) => e.products);
+        }
+
+        this.isLoadingEnterprises = !cached?.length;
 
         promise
             .then((enterprises) => {

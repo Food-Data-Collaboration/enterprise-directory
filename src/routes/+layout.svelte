@@ -14,7 +14,8 @@
 	const userState = setDirectoryState(new DirectoryState());
 
 	$effect(() => {
-		userState.init(data.enterprisePromise);
+		if (data.enterprisePromise)
+			userState.init(data.enterprisePromise, data.cachedEnterprises);
 	});
 </script>
 

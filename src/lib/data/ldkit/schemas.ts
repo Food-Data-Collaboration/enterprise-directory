@@ -24,8 +24,8 @@ export const ProductSchema = {
 
 // Organisations only hold `{@id, @type}` stubs for their addresses and
 // products, inside LDP containers. The full records are in the flat
-// /organization_addresses/ and /supplied_products/ containers, which the lens
-// queries as extra sources. Comunica joins them by IRI.
+// /organization_addresses/ and /supplied_products/ containers. http.ts
+// loads all three into one in-memory store, so the query joins them by IRI.
 export const OrganizationSchema = {
     "@type": dfcb.Organization,
     name: dfcb.name,

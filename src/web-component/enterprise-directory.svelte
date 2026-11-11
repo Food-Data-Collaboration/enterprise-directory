@@ -49,7 +49,10 @@
     onMount(() => {
         installFont();
 
-        userState.init(enterpriseSource.fetchEnterprises());
+        userState.init(
+            enterpriseSource.fetchEnterprises(),
+            enterpriseSource.cached?.() ?? null,
+        );
 
         layout.addEventListener("click", openProfile);
         return () => layout.removeEventListener("click", openProfile);

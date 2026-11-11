@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createLens } from "ldkit";
-import { QueryEngine } from "@comunica/query-sparql";
+import { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
 import { Parser, Store } from "n3";
 import { Enterprise } from "$lib/models/enterprise";
 import { OrganizationSchema } from "./schemas";
