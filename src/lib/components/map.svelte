@@ -1,6 +1,6 @@
 <script lang="ts">
     import maplibregl from "maplibre-gl";
-    import { mount, onMount } from "svelte";
+    import { mount, onMount, unmount } from "svelte";
     import MapMarker from "./ui/map_pin.svelte";
     import { getDirectoryState } from "$lib/models/state.svelte";
     import { MapPin } from "@lucide/svelte";
@@ -15,16 +15,12 @@
     let isLoading: boolean = $state(true);
     let map: maplibregl.Map | null = $state(null);
     let container: HTMLDivElement;
-    let markers: maplibregl.Marker[] = [];
 
     const userState = getDirectoryState();
 
     onMount(async () => {
         await import("maplibre-gl/dist/maplibre-gl.css");
         map = new maplibregl.Map({
-            // The element, not its id: maplibre resolves a string container with
-            // document.getElementById, which cannot see inside the web component's
-            // shadow root.
             container,
             style: "https://raw.githubusercontent.com/go2garret/maps/main/src/assets/json/openStreetMap.json",
             zoom: 5,
@@ -34,7 +30,7 @@
             positionOptions: {
                 enableHighAccuracy: true,
             },
-            trackUserLocation: true, // Optional: track changes to the user's location
+            trackUserLocation: true,
         });
 
         map.addControl(geolocate, "bottom-right");
@@ -53,47 +49,61 @@
     });
 
     $effect(() => {
-        if (map != null) {
-            userState.enterprises
-                .filter(
-                    (enterprise: Enterprise) =>
-                        enterprise.addresses.length > 0 &&
-                        enterprise.addresses[0].lnglat != null,
-                )
-                .forEach((enterprise: Enterprise) => {
-                    let customMarker = document.createElement("span");
+        if (map == null) return;
+
+        const markers: maplibregl.Marker[] = [];
+        const components: ReturnType<typeof mount>[] = [];
+
+        userState.enterprises
+            .filter(
+                (enterprise: Enterprise) =>
+                    enterprise.addresses.length > 0 &&
+                    enterprise.addresses[0].lnglat != null,
+            )
+            .forEach((enterprise: Enterprise) => {
+                let customMarker = document.createElement("span");
+                components.push(
                     mount(MapMarker, {
                         target: customMarker,
                         props: { image: enterprise.logoUrl },
-                    });
+                    }),
+                );
 
-                    let popupElement = document.createElement("div");
+                let popupElement = document.createElement("div");
+                components.push(
                     mount(CardEnterprise, {
                         target: popupElement,
                         props: {
                             enterprise: enterprise,
                         },
-                    });
+                    }),
+                );
 
-                    let popup = new maplibregl.Popup().setDOMContent(
-                        popupElement,
-                    );
-                    let Marker: maplibregl.Marker = new maplibregl.Marker({
-                        element: customMarker,
-                    })
-                        .setLngLat(enterprise.addresses[0].lnglat!)
-                        .setPopup(popup)
-                        .addTo(map!);
+                let popup = new maplibregl.Popup().setDOMContent(popupElement);
+                let Marker: maplibregl.Marker = new maplibregl.Marker({
+                    element: customMarker,
+                })
+                    .setLngLat(enterprise.addresses[0].lnglat!)
+                    .setPopup(popup)
+                    .addTo(map!);
 
-                    markers.push(Marker);
-                });
+                markers.push(Marker);
+            });
 
-            const centre = new maplibregl.LngLat(
-                Number.parseFloat(DEFAULT_MAP_CENTRE_LNG),
-                Number.parseFloat(DEFAULT_MAP_CENTRE_LAT),
-            );
-            map.setCenter(centre);
-        }
+        const centre = new maplibregl.LngLat(
+            Number.parseFloat(DEFAULT_MAP_CENTRE_LNG),
+            Number.parseFloat(DEFAULT_MAP_CENTRE_LAT),
+        );
+        map.setCenter(centre);
+
+        return () => {
+            markers.forEach((marker) => marker.remove());
+            components.forEach((component) => unmount(component));
+        };
+    });
+
+    $effect(() => {
+        if (!hidden) map?.resize();
     });
 </script>
 
@@ -134,6 +144,7 @@
         &.hidden {
             z-index: -1;
             opacity: 0;
+            visibility: hidden;
         }
 
         #map {

@@ -12,13 +12,6 @@ function fnv1a(input: string): string {
     return (hash >>> 0).toString(36);
 }
 
-/**
- * Fingerprint of an LDkit schema. The cache stores raw lens output, whose
- * shape is defined entirely by the schema, so any schema change (fields,
- * IRIs, @optional/@array, nested schemas) yields a new version and old
- * entries are ignored. Mapper changes need no invalidation: they re-run on
- * every read.
- */
 export function schemaVersion(schema: object): string {
     return fnv1a(JSON.stringify(schema));
 }

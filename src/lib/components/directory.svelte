@@ -7,23 +7,30 @@
     let { hidden }: { hidden: boolean } = $props();
 
     const userState = getDirectoryState();
+
+    let productsVisited = $state(false);
+    $effect(() => {
+        if (userState.activeTab == "Product") productsVisited = true;
+    });
 </script>
 
 <article id="directory-view" class:hidden class:sidebar={userState.showFilters}>
-    {#if userState.activeTab == "Directory"}
-        {#each userState.enterprises as enterprise, index (index)}
+    <div class="list" class:inactive={userState.activeTab != "Directory"}>
+        {#each userState.enterprises as enterprise (enterprise.id)}
             <CardEnterprise {enterprise} />
         {/each}
-    {/if}
-    {#if userState.activeTab == "Product"}
-        {#each userState.products as product, index (index)}
-            <CardProduct
-                {product}
-                link={resolve("/products/[id]", {
-                    id: product.profileId,
-                })}
-            />
-        {/each}
+    </div>
+    {#if productsVisited}
+        <div class="list" class:inactive={userState.activeTab != "Product"}>
+            {#each userState.products as product (`${product.enterpriseId}:${product.id}`)}
+                <CardProduct
+                    {product}
+                    link={resolve("/products/[id]", {
+                        id: product.profileId,
+                    })}
+                />
+            {/each}
+        </div>
     {/if}
 </article>
 
@@ -43,6 +50,14 @@
             overflow: hidden;
             z-index: -1;
             opacity: 0;
+        }
+
+        .list {
+            display: contents;
+
+            &.inactive {
+                display: none;
+            }
         }
 
         @include from($breakpoint-small) {
