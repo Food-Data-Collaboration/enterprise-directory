@@ -1,6 +1,6 @@
 import maplibregl from "maplibre-gl";
 import type { Enterprise } from "$lib/models/enterprise";
-import type { MapConfig } from "./config";
+import type { LngLat, MapConfig } from "./config";
 import { EnterpriseClusters, type MapItem } from "./clusters";
 
 export interface RenderedElement {
@@ -14,8 +14,17 @@ export interface MarkerRenderer {
     cluster(count: number): RenderedElement;
 }
 
+export interface MapView {
+    center: LngLat;
+    zoom: number;
+    bearing: number;
+    pitch: number;
+}
+
 export interface EnterpriseMapOptions {
     onIdle?: () => void;
+    initialView?: MapView;
+    onViewChange?: (view: MapView) => void;
 }
 
 export class EnterpriseMap {
@@ -69,14 +78,30 @@ export class EnterpriseMap {
         });
 
         this.#map.setMaxBounds(this.#map.getBounds());
-        this.recentre();
+
+        if (options.initialView) this.#map.jumpTo(options.initialView);
+        else this.recentre();
+
+        if (options.onViewChange) {
+            const onViewChange = options.onViewChange;
+            this.#map.on("moveend", () => onViewChange(this.getView()));
+        }
+    }
+
+    getView(): MapView {
+        const { lng, lat } = this.#map.getCenter();
+        return {
+            center: { lng, lat },
+            zoom: this.#map.getZoom(),
+            bearing: this.#map.getBearing(),
+            pitch: this.#map.getPitch(),
+        };
     }
 
     setEnterprises(enterprises: Enterprise[]): void {
         this.#clusters.load(enterprises);
         this.#clearMarkers();
         this.#syncMarkers();
-        this.recentre();
     }
 
     recentre(): void {

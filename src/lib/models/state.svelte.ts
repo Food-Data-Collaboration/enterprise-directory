@@ -4,6 +4,7 @@ import type { Enterprise } from '$lib/models/enterprise';
 import type { Tabs } from "./tabs";
 import { analytics } from "$lib/analytics";
 import type { Product } from "./product";
+import type { MapView } from "$lib/map/enterprise_map";
 
 export class DirectoryState {
     enterprises = $state<Enterprise[]>([]);
@@ -14,6 +15,8 @@ export class DirectoryState {
     filters = $state(new FilterState());
     activeTab = $state<Tabs>("Directory");
     isTabbed = $state(true);
+    // Not reactive: only read when the map mounts, so it survives route changes.
+    mapView: MapView | null = null;
 
     init(promise: Promise<Enterprise[]>, cached: Enterprise[] | null = null) {
         if (cached?.length) {

@@ -44,11 +44,14 @@
 
             map = new EnterpriseMap(container, parseMapConfig(env), renderer, {
                 onIdle: () => (isLoading = false),
+                initialView: userState.mapView ?? undefined,
+                onViewChange: (view) => (userState.mapView = view),
             });
         });
 
         return () => {
             destroyed = true;
+            if (map) userState.mapView = map.getView();
             map?.destroy();
             map = null;
         };

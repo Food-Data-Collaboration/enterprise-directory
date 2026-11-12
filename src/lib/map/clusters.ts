@@ -12,6 +12,7 @@ const WORLD: [number, number, number, number] = [-180, -85, 180, 85];
 
 export class EnterpriseClusters {
     readonly #index: Supercluster<PointProps>;
+    #loaded = false;
 
     constructor(options: { radius: number; maxZoom: number }) {
         this.#index = new Supercluster<PointProps>(options);
@@ -25,9 +26,11 @@ export class EnterpriseClusters {
                 properties: { enterprise },
             })),
         );
+        this.#loaded = true;
     }
 
     itemsAt(zoom: number): MapItem[] {
+        if (!this.#loaded) return [];
         return this.#index.getClusters(WORLD, Math.floor(zoom)).map((feature) => {
             const [lng, lat] = feature.geometry.coordinates;
             const lnglat = { lng, lat };
