@@ -1,5 +1,5 @@
 <script lang="ts">
-    let { image }: { image: string } = $props();
+    let { image, count }: { image?: string; count?: number } = $props();
 </script>
 
 <svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
@@ -11,7 +11,11 @@
         />
     </g>
 </svg>
-<span style=" background-image: url({image})"></span>
+{#if count !== undefined}
+    <span class="cluster">{count}</span>
+{:else}
+    <span style:background-image="url({image})"></span>
+{/if}
 
 <style lang="scss">
     svg {
@@ -28,5 +32,16 @@
         height: 38px;
         background-position: center center;
         background-size: cover;
+
+        &.cluster {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: $black;
+            color: $white;
+            font-weight: 700;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
     }
 </style>

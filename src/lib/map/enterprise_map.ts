@@ -1,6 +1,7 @@
 import maplibregl from "maplibre-gl";
 import type { Enterprise } from "$lib/models/enterprise";
-import { mappableEnterprises, type MapConfig } from "./config";
+import type { MapConfig } from "./config";
+import { EnterpriseClusters, type MapItem } from "./clusters";
 
 export interface RenderedElement {
     element: HTMLElement;
@@ -10,6 +11,7 @@ export interface RenderedElement {
 export interface MarkerRenderer {
     marker(enterprise: Enterprise): RenderedElement;
     popup(enterprise: Enterprise): RenderedElement;
+    cluster(count: number): RenderedElement;
 }
 
 export interface EnterpriseMapOptions {
@@ -20,8 +22,9 @@ export class EnterpriseMap {
     readonly #map: maplibregl.Map;
     readonly #config: MapConfig;
     readonly #renderer: MarkerRenderer;
-    #markers: maplibregl.Marker[] = [];
-    #rendered: RenderedElement[] = [];
+    readonly #clusters: EnterpriseClusters;
+    readonly #markers = new Map<string, { marker: maplibregl.Marker; cleanup: () => void }>();
+    #zoomLevel = Number.NaN;
 
     constructor(
         container: HTMLElement,
@@ -31,6 +34,10 @@ export class EnterpriseMap {
     ) {
         this.#config = config;
         this.#renderer = renderer;
+        this.#clusters = new EnterpriseClusters({
+            radius: config.clusterRadius,
+            maxZoom: config.clusterMaxZoom,
+        });
 
         this.#map = new maplibregl.Map({
             container,
@@ -57,26 +64,18 @@ export class EnterpriseMap {
 
         if (options.onIdle) this.#map.on("idle", options.onIdle);
 
+        this.#map.on("zoom", () => {
+            if (Math.floor(this.#map.getZoom()) !== this.#zoomLevel) this.#syncMarkers();
+        });
+
         this.#map.setMaxBounds(this.#map.getBounds());
         this.recentre();
     }
 
     setEnterprises(enterprises: Enterprise[]): void {
+        this.#clusters.load(enterprises);
         this.#clearMarkers();
-
-        for (const { enterprise, lnglat } of mappableEnterprises(enterprises)) {
-            const marker = this.#renderer.marker(enterprise);
-            const popup = this.#renderer.popup(enterprise);
-            this.#rendered.push(marker, popup);
-
-            this.#markers.push(
-                new maplibregl.Marker({ element: marker.element })
-                    .setLngLat(lnglat)
-                    .setPopup(new maplibregl.Popup().setDOMContent(popup.element))
-                    .addTo(this.#map),
-            );
-        }
-
+        this.#syncMarkers();
         this.recentre();
     }
 
@@ -94,10 +93,67 @@ export class EnterpriseMap {
         this.#map.remove();
     }
 
+    #syncMarkers(): void {
+        this.#zoomLevel = Math.floor(this.#map.getZoom());
+        const items = this.#clusters.itemsAt(this.#zoomLevel);
+        const keys = new Set(items.map((item) => item.key));
+
+        for (const [key, entry] of this.#markers) {
+            if (keys.has(key)) continue;
+            entry.marker.remove();
+            entry.cleanup();
+            this.#markers.delete(key);
+        }
+
+        for (const item of items) {
+            if (!this.#markers.has(item.key)) this.#markers.set(item.key, this.#addMarker(item));
+        }
+    }
+
+    #addMarker(item: MapItem): { marker: maplibregl.Marker; cleanup: () => void } {
+        if (item.kind === "enterprise") {
+            const pin = this.#renderer.marker(item.enterprise);
+            const popup = this.#renderer.popup(item.enterprise);
+            const marker = new maplibregl.Marker({ element: pin.element })
+                .setLngLat(item.lnglat)
+                .setPopup(new maplibregl.Popup().setDOMContent(popup.element))
+                .addTo(this.#map);
+
+            return {
+                marker,
+                cleanup: () => {
+                    pin.destroy();
+                    popup.destroy();
+                },
+            };
+        }
+
+        const pin = this.#renderer.cluster(item.count);
+        const expand = () =>
+            this.#map.easeTo({
+                center: item.lnglat,
+                zoom: Math.min(this.#clusters.expansionZoom(item.clusterId), this.#map.getMaxZoom()),
+            });
+        pin.element.addEventListener("click", expand);
+
+        const marker = new maplibregl.Marker({ element: pin.element })
+            .setLngLat(item.lnglat)
+            .addTo(this.#map);
+
+        return {
+            marker,
+            cleanup: () => {
+                pin.element.removeEventListener("click", expand);
+                pin.destroy();
+            },
+        };
+    }
+
     #clearMarkers(): void {
-        this.#markers.forEach((marker) => marker.remove());
-        this.#rendered.forEach((rendered) => rendered.destroy());
-        this.#markers = [];
-        this.#rendered = [];
+        for (const { marker, cleanup } of this.#markers.values()) {
+            marker.remove();
+            cleanup();
+        }
+        this.#markers.clear();
     }
 }

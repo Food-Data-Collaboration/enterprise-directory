@@ -9,6 +9,8 @@ export const publicEnv = {
 	MAP_BOUND_SW_LAT: { required: false },
 	MAP_BOUND_NE_LNG: { required: false },
 	MAP_BOUND_NE_LAT: { required: false },
+	MAP_CLUSTER_RADIUS: { required: false },
+	MAP_CLUSTER_MAX_ZOOM: { required: false },
 	ENABLE_PRODUCTS: { required: true },
 	POSTHOG_PROJECT_TOKEN: { required: false },
 	POSTHOG_HOST: { required: false },

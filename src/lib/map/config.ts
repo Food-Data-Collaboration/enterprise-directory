@@ -9,10 +9,15 @@ export interface MapConfig {
     minZoom?: number;
     maxZoom?: number;
     bounds?: [LngLat, LngLat];
+    clusterRadius: number;
+    clusterMaxZoom: number;
 }
 
 export const MAP_STYLE_URL =
     "https://raw.githubusercontent.com/go2garret/maps/main/src/assets/json/openStreetMap.json";
+
+const DEFAULT_CLUSTER_RADIUS = 60;
+const DEFAULT_CLUSTER_MAX_ZOOM = 14;
 
 type Env = Record<string, string | undefined>;
 
@@ -43,6 +48,8 @@ export function parseMapConfig(env: Env): MapConfig {
         minZoom: toNumber(env.MAP_ZOOM_MIN),
         maxZoom: toNumber(env.MAP_ZOOM_MAX),
         bounds: sw && ne ? [sw, ne] : undefined,
+        clusterRadius: toNumber(env.MAP_CLUSTER_RADIUS) ?? DEFAULT_CLUSTER_RADIUS,
+        clusterMaxZoom: toNumber(env.MAP_CLUSTER_MAX_ZOOM) ?? DEFAULT_CLUSTER_MAX_ZOOM,
     };
 }
 

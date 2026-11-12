@@ -25,31 +25,48 @@ export const variables = defineEnvVars({
     },
     MAP_ZOOM: {
         public: true,
-        static: true
+        static: true,
+        schema: optionalString
     },
     MAP_ZOOM_MIN: {
         public: true,
-        static: true
+        static: true,
+        schema: optionalString
     },
     MAP_ZOOM_MAX: {
         public: true,
-        static: true
+        static: true,
+        schema: optionalString
     },
     MAP_BOUND_SW_LNG: {
         public: true,
-        static: true
+        static: true,
+        schema: optionalString
     },
     MAP_BOUND_SW_LAT: {
         public: true,
-        static: true
+        static: true,
+        schema: optionalString
     },
     MAP_BOUND_NE_LNG: {
         public: true,
-        static: true
+        static: true,
+        schema: optionalString
     },
     MAP_BOUND_NE_LAT: {
         public: true,
-        static: true
+        static: true,
+        schema: optionalString
+    },
+    MAP_CLUSTER_RADIUS: {
+        public: true,
+        static: true,
+        schema: optionalString
+    },
+    MAP_CLUSTER_MAX_ZOOM: {
+        public: true,
+        static: true,
+        schema: optionalString
     },
     ENABLE_PRODUCTS: {
         public: true,

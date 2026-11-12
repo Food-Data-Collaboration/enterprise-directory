@@ -33,6 +33,7 @@
         marker: (enterprise) =>
             render("span", MapMarker, { image: enterprise.logoUrl }),
         popup: (enterprise) => render("div", CardEnterprise, { enterprise }),
+        cluster: (count) => render("span", MapMarker, { count }),
     };
 
     onMount(() => {
