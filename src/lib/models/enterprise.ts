@@ -12,6 +12,10 @@ export class Enterprise {
     categories: string[] = ["Bakery", "Pastries", "Bread"];
     logoUrl: string = "";
     images: string[] = [];
+    website: string = "";
+    email: string = "";
+    phone: string = "";
+    csa: string = "";
 
     static fromLdkit(data: OrganizationData, images: string[] = []): Enterprise {
         const enterprise = new Enterprise();
@@ -22,6 +26,9 @@ export class Enterprise {
         enterprise.id = data.$id;
         enterprise.name = data.name;
         enterprise.description = data.description ?? "";
+        enterprise.website = data.website ?? "";
+        enterprise.email = data.email ?? "";
+        enterprise.phone = data.phone ?? "";
         enterprise.logoUrl = data.logo ?? "";
         enterprise.addresses = (data.hasAddress?.contains ?? [])
             .map((address) => Address.fromLdkit(address));

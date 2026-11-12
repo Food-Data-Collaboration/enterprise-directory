@@ -21,7 +21,7 @@
     import Filters from "$lib/components/filters.svelte";
     import Directory from "$lib/components/directory.svelte";
     import Map from "$lib/components/map.svelte";
-    import Profile from "$lib/components/profile.svelte";
+    import Profile from "$lib/components/profile_enterprise.svelte";
     import { installFont, shadowStyles } from "./styles.web-component";
     import { enterpriseSource } from "$lib/data";
 

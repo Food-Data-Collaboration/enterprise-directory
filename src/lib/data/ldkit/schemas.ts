@@ -30,6 +30,9 @@ export const OrganizationSchema = {
     "@type": dfcb.Organization,
     name: dfcb.name,
     description: { "@id": dfcb.hasDescription, "@optional": true },
+    website: { "@id": dfcb.websitePage, "@optional": true },
+    email: { "@id": dfcb.email, "@optional": true },
+    phone: { "@id": dfcb.hasPhoneNumber, "@optional": true },
     logo: { "@id": dfcb.logo, "@optional": true },
     hasAddress: {
         "@id": dfcb.hasAddress,

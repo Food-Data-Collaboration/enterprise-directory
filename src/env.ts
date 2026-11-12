@@ -15,11 +15,39 @@ export const variables = defineEnvVars({
         public: true,
         static: true
     },
-    DEFAULT_MAP_CENTRE_LNG: {
+    MAP_CENTRE_LNG: {
         public: true,
         static: true
     },
-    DEFAULT_MAP_CENTRE_LAT: {
+    MAP_CENTRE_LAT: {
+        public: true,
+        static: true
+    },
+    MAP_ZOOM: {
+        public: true,
+        static: true
+    },
+    MAP_ZOOM_MIN: {
+        public: true,
+        static: true
+    },
+    MAP_ZOOM_MAX: {
+        public: true,
+        static: true
+    },
+    MAP_BOUND_SW_LNG: {
+        public: true,
+        static: true
+    },
+    MAP_BOUND_SW_LAT: {
+        public: true,
+        static: true
+    },
+    MAP_BOUND_NE_LNG: {
+        public: true,
+        static: true
+    },
+    MAP_BOUND_NE_LAT: {
         public: true,
         static: true
     },

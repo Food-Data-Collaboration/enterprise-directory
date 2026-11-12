@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Profile from "$lib/components/profile.svelte";
+    import ProfileEnterprise from "$lib/components/profile_enterprise.svelte";
     import { getDirectoryState } from "$lib/models/state.svelte";
     import { page } from "$app/state";
 
@@ -10,5 +10,5 @@
 </script>
 
 {#if enterprise}
-    <Profile {enterprise} />
+    <ProfileEnterprise {enterprise} />
 {/if}
