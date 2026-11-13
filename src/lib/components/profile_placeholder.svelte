@@ -103,7 +103,7 @@
         gap: $gap-small;
 
         a {
-            color: $secondary;
+            color: $link;
         }
     }
 

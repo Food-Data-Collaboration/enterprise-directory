@@ -1,85 +1,26 @@
 import { DATA_HOST } from "$app/env/public";
-import { createLens } from "ldkit";
-import { Store } from "n3";
-import { JsonLdParser } from "jsonld-streaming-parser";
-import type { IDocumentLoader, IJsonLdContext } from "jsonld-context-parser";
-import type { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
 import { Enterprise } from "$lib/models/enterprise";
-import { OrganizationSchema, type OrganizationData } from "./ldkit/schemas";
+import type { OrganizationData } from "./ldkit/schemas";
+import type { OrganizationsRequest, OrganizationsResponse } from "./organizations.worker";
 import { createOrganizationCache } from "./cache";
-import type { EnterpriseSource, Fetch } from ".";
+import { createOrganizationsWorker } from "$lib/data/organizations_worker";
+import type { EnterpriseSource } from ".";
 
-const CONTAINERS = ["organizations", "organization_addresses", "supplied_products"];
-const KNOWN_CONTEXTS = ["https://cdn.startinblox.com/owl/context.jsonld"];
+/** Fetch and map the organisations in a worker; the RDF stack never loads on the main thread. */
+function fetchOrganizations(dataHost: string): Promise<OrganizationData[]> {
+    const worker = createOrganizationsWorker();
 
-let engine: Promise<QueryEngine> | null = null;
-
-function getEngine(): Promise<QueryEngine> {
-    engine ??= import("@comunica/query-sparql-rdfjs-lite").then(
-        ({ QueryEngine }) => new QueryEngine()
-    );
-    return engine;
-}
-
-function createDocumentLoader(fetcher: Fetch): IDocumentLoader & { preload(url: string): void } {
-    const contexts = new Map<string, Promise<IJsonLdContext>>();
-
-    const load = (url: string) => {
-        let context = contexts.get(url);
-
-        if (!context) {
-            context = fetcher(url, { headers: { Accept: "application/ld+json" } }).then((response) => {
-                if (!response.ok)
-                    throw new Error(`Failed to fetch JSON-LD context ${url}: ${response.status}`);
-                return response.json();
-            });
-            context.catch(() => contexts.delete(url));
-            contexts.set(url, context);
-        }
-
-        return context;
-    };
-
-    return { load, preload: (url) => void load(url).catch(() => { }) };
-}
-
-async function fetchJsonLd(fetcher: Fetch, url: string): Promise<string> {
-    const response = await fetcher(url, { headers: { Accept: "application/ld+json" } });
-
-    if (!response.ok)
-        throw new Error(`Failed to fetch ${url}: ${response.status}`);
-
-    return response.text();
-}
-
-function parseInto(store: Store, json: string, baseIRI: string, documentLoader: IDocumentLoader): Promise<void> {
-    return new Promise((resolve, reject) => {
-        const parser = new JsonLdParser({ baseIRI, documentLoader });
-
-        parser.on("data", (quad) => store.addQuad(quad));
-        parser.on("error", reject);
-        parser.on("end", resolve);
-        parser.write(json);
-        parser.end();
-    });
-}
-
-export async function fetchOrganizations(fetcher: Fetch = globalThis.fetch): Promise<OrganizationData[]> {
-    const documentLoader = createDocumentLoader(fetcher);
-    KNOWN_CONTEXTS.forEach((url) => documentLoader.preload(url));
-
-    const urls = CONTAINERS.map((path) => `${DATA_HOST}/${path}/`);
-    const [documents, queryEngine] = await Promise.all([
-        Promise.all(urls.map((url) => fetchJsonLd(fetcher, url))),
-        getEngine(),
-    ]);
-
-    const store = new Store();
-    await Promise.all(documents.map((json, index) => parseInto(store, json, urls[index], documentLoader)));
-
-    const organizations = createLens(OrganizationSchema, { engine: queryEngine, sources: [store] });
-
-    return organizations.find({ take: 1000 });
+    return new Promise<OrganizationData[]>((resolve, reject) => {
+        worker.onmessage = ({ data }: MessageEvent<OrganizationsResponse>) => {
+            if (data.ok) resolve(data.organizations);
+            else reject(new Error(data.message));
+        };
+        worker.onerror = (event) => {
+            event.preventDefault();
+            reject(new Error(event.message || "Organisations worker failed"));
+        };
+        worker.postMessage({ dataHost } satisfies OrganizationsRequest);
+    }).finally(() => worker.terminate());
 }
 
 function toEnterprises(organizations: OrganizationData[]): Enterprise[] {
@@ -96,8 +37,8 @@ export class LdkitEnterpriseSource implements EnterpriseSource {
         return organizations ? toEnterprises(organizations) : null;
     }
 
-    async fetchEnterprises(fetcher: Fetch = globalThis.fetch): Promise<Enterprise[]> {
-        const organizations = await fetchOrganizations(fetcher);
+    async fetchEnterprises(): Promise<Enterprise[]> {
+        const organizations = await fetchOrganizations(DATA_HOST);
         this.cache.write(organizations);
         return toEnterprises(organizations);
     }

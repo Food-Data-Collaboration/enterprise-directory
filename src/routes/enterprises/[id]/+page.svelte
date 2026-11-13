@@ -10,6 +10,15 @@
     );
 </script>
 
+<svelte:head>
+    <title>{enterprise ? `${enterprise.name} · Enterprise Directory` : "Enterprise Directory"}</title>
+    <meta
+        name="description"
+        content={enterprise?.description.slice(0, 160) ||
+            "An enterprise profile in the Enterprise Directory."}
+    />
+</svelte:head>
+
 {#if enterprise}
     <ProfileEnterprise {enterprise} />
 {:else}

@@ -3,6 +3,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { resolve } from 'path';
 import { publicEnv } from './src/env.config';
 import svelteConfig from './svelte.config.js';
+import { workerPolyfills } from './vite.worker-polyfills';
 
 const shims = resolve('./src/web-component');
 
@@ -124,6 +125,8 @@ export default defineConfig(({ mode }) => {
 		},
 		resolve: {
 			alias: {
+				// Before '$lib' so this exact specifier wins over the prefix alias.
+				'$lib/data/organizations_worker': resolve(shims, 'organizations_worker.web-component.ts'),
 				'$lib': resolve('./src/lib'),
 				'$app/paths': resolve(shims, 'paths.web-component.ts'),
 				'maplibre-gl/dist/maplibre-gl.css': resolve(shims, 'empty.web-component.ts')
@@ -138,6 +141,17 @@ export default defineConfig(({ mode }) => {
 			},
 			outDir: 'dist/web-component',
 			emptyOutDir: true,
+			rolldownOptions: {
+				output: {
+					codeSplitting: false
+				}
+			}
+		},
+		// Library mode inlines the organisations worker into the bundle. It has to:
+		// the element is served cross-origin, and workers must be same-origin.
+		worker: {
+			format: 'es' as const,
+			plugins: () => [workerPolyfills()],
 			rolldownOptions: {
 				output: {
 					codeSplitting: false

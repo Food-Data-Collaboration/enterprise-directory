@@ -18,6 +18,9 @@ const config = {
 	},
 	kit: {
 		adapter: adapter(),
+		// Inline the small per-component stylesheets (each 0–2 KB) instead of making
+		// the first paint wait on several render-blocking requests.
+		inlineStyleThreshold: 4096,
 		paths: {
 			relative: false
 		},

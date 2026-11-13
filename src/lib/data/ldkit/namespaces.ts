@@ -1,4 +1,13 @@
-import { createNamespace } from "ldkit";
+import type { createNamespace as ldkitCreateNamespace } from "ldkit";
+
+// ldkit's own createNamespace, re-implemented: importing anything at runtime from
+// "ldkit" pulls the whole library (n3, SPARQL, Buffer shims) into the main bundle,
+// and the schema is needed there for the cache version. The type keeps ldkit's typing.
+const createNamespace: typeof ldkitCreateNamespace = (spec) =>
+    Object.assign(
+        Object.fromEntries(spec.terms.map((term) => [term, `${spec.iri}${term}`])),
+        { $prefix: spec.prefix, $iri: spec.iri },
+    ) as ReturnType<typeof ldkitCreateNamespace<typeof spec>>;
 
 // The sioldata JSON-LD context (https://cdn.startinblox.com/owl/context.jsonld)
 // does not define the `dfc-b` prefix, so RDF parsers read "dfc-b:name" as an

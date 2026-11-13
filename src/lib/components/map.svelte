@@ -6,11 +6,12 @@
     import CardEnterprise from "./ui/card_enterprise.svelte";
     import * as env from "$app/env/public";
     import { parseMapConfig } from "$lib/map/config";
-    import {
+    import type {
         EnterpriseMap,
-        type MarkerRenderer,
-        type RenderedElement,
+        MarkerRenderer,
+        RenderedElement,
     } from "$lib/map/enterprise_map";
+    import { whenIdle } from "$lib/idle";
     import type { Responsive } from "$lib/models/display_mode";
 
     let {
@@ -40,12 +41,32 @@
         cluster: (count) => render("span", MapMarker, { count }),
     };
 
+    // maplibre is ~1 MB, so it stays out of the page chunk and loads on demand.
+    let mapModule: Promise<typeof EnterpriseMap> | null = null;
+    const loadMap = () =>
+        (mapModule ??= Promise.all([
+            import("$lib/map/enterprise_map"),
+            import("maplibre-gl/dist/maplibre-gl.css"),
+        ]).then(([module]) => module.EnterpriseMap));
+
     onMount(() => {
-        let destroyed = false;
+        // Fetch the code in the background so the first switch to the map is quick.
+        whenIdle(() => void loadMap());
 
-        import("maplibre-gl/dist/maplibre-gl.css").then(() => {
-            if (destroyed) return;
+        return () => {
+            if (map) userState.mapView = map.getView();
+            map?.destroy();
+            map = null;
+        };
+    });
 
+    // Create the map the first time it is shown, not while it sits behind a tab.
+    $effect(() => {
+        if (map || !userState.current.mapVisible) return;
+
+        let cancelled = false;
+        loadMap().then((EnterpriseMap) => {
+            if (cancelled || map) return;
             map = new EnterpriseMap(container, parseMapConfig(env), renderer, {
                 onIdle: () => (isLoading = false),
                 initialView: userState.mapView ?? undefined,
@@ -54,10 +75,7 @@
         });
 
         return () => {
-            destroyed = true;
-            if (map) userState.mapView = map.getView();
-            map?.destroy();
-            map = null;
+            cancelled = true;
         };
     });
 
@@ -127,6 +145,11 @@
             @include from($breakpoint-medium) {
                 inset: 0 0 0 (-$gap);
             }
+        }
+
+        // Third-party control: underline so its link isn't distinguished by colour alone.
+        :global(.maplibregl-ctrl-attrib a) {
+            text-decoration: underline;
         }
 
         .loading {

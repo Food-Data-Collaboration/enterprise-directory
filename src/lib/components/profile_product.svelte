@@ -24,7 +24,7 @@
                 <ArrowLeft size="28" />
             </button>
         {:else}
-            <a href={resolve(`/`)}>
+            <a href={resolve(`/`)} aria-label="Back to directory">
                 <ArrowLeft size="28" />
             </a>
         {/if}

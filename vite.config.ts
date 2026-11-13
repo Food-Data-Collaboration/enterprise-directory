@@ -1,23 +1,15 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import { workerPolyfills } from './vite.worker-polyfills';
 
 export default defineConfig({
-	plugins: [
-		// Browser polyfills for Comunica (used by ldkit). Vitest runs in Node,
-		// where they would shadow the real built-ins and break dep pre-bundling.
-		!process.env.VITEST &&
-			nodePolyfills({
-				// Rolldown's runtime imports createRequire from node:module in SSR output.
-				exclude: ['module'],
-				globals: {
-					Buffer: true,
-					global: true,
-					process: true
-				}
-			}),
-		sveltekit()
-	],
+	plugins: [sveltekit()],
+	// Only the organisations worker (ldkit, Comunica, N3) needs Node built-ins, so the
+	// polyfills are scoped to worker bundles instead of shipping in the main app.
+	worker: {
+		format: 'es',
+		plugins: () => [workerPolyfills()]
+	},
 	css: {
 		preprocessorOptions: {
 			scss: {

@@ -26,7 +26,7 @@
             <ArrowLeft size="28" />
         </button>
     {:else}
-        <a href={resolve(`/`)} style="grid-area: back;">
+        <a href={resolve(`/`)} style="grid-area: back;" aria-label="Back to directory">
             <ArrowLeft size="28" />
         </a>
     {/if}
@@ -111,7 +111,7 @@
                 <ArrowLeft size="28" />
             </button>
         {:else}
-            <a href={resolve(`/`)}>
+            <a href={resolve(`/`)} aria-label="Back to directory">
                 <ArrowLeft size="28" />
             </a>
         {/if}
@@ -290,7 +290,7 @@
                 grid-template-columns: 1fr 1fr 1fr;
             }
             a {
-                color: $secondary;
+                color: $link;
             }
         }
     }
@@ -305,7 +305,7 @@
             }
 
             a {
-                color: $secondary;
+                color: $link;
             }
         }
     }
