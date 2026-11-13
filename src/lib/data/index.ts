@@ -1,6 +1,6 @@
 import { USE_DUMMY_DATA } from "$app/env/public";
 import type { Enterprise } from "$lib/models/enterprise";
-import { LdkitEnterpriseSource } from "./http";
+import { LdpEnterpriseSource } from "./http";
 import { DummyEnterpriseSource } from "./dummy";
 
 export type Fetch = typeof globalThis.fetch;
@@ -12,4 +12,4 @@ export interface EnterpriseSource {
 }
 
 export const enterpriseSource: EnterpriseSource =
-    USE_DUMMY_DATA === "true" ? new DummyEnterpriseSource() : new LdkitEnterpriseSource();
+    USE_DUMMY_DATA === "true" ? new DummyEnterpriseSource() : new LdpEnterpriseSource();

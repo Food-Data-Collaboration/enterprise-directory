@@ -2,8 +2,14 @@ import type { Enterprise } from "$lib/models/enterprise";
 
 export type LngLat = { lng: number; lat: number };
 
+export interface TileSource {
+    url: string;
+    attribution: string;
+    maxZoom: number;
+}
+
 export interface MapConfig {
-    style: string;
+    tiles: TileSource;
     centre: LngLat;
     zoom?: number;
     minZoom?: number;
@@ -13,8 +19,12 @@ export interface MapConfig {
     clusterMaxZoom: number;
 }
 
-export const MAP_STYLE_URL =
-    "https://raw.githubusercontent.com/go2garret/maps/main/src/assets/json/openStreetMap.json";
+/** Standard OpenStreetMap raster tiles; see https://operations.osmfoundation.org/policies/tiles/ */
+export const OSM_TILES: TileSource = {
+    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+};
 
 const DEFAULT_CLUSTER_RADIUS = 60;
 const DEFAULT_CLUSTER_MAX_ZOOM = 14;
@@ -42,7 +52,7 @@ export function parseMapConfig(env: Env): MapConfig {
     const ne = toLngLat(env.MAP_BOUND_NE_LNG, env.MAP_BOUND_NE_LAT);
 
     return {
-        style: MAP_STYLE_URL,
+        tiles: OSM_TILES,
         centre,
         zoom: toNumber(env.MAP_ZOOM),
         minZoom: toNumber(env.MAP_ZOOM_MIN),

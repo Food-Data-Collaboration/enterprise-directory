@@ -41,13 +41,12 @@
         cluster: (count) => render("span", MapMarker, { count }),
     };
 
-    // maplibre is ~1 MB, so it stays out of the page chunk and loads on demand.
+    // The map library stays out of the page chunk and loads on demand.
     let mapModule: Promise<typeof EnterpriseMap> | null = null;
     const loadMap = () =>
-        (mapModule ??= Promise.all([
-            import("$lib/map/enterprise_map"),
-            import("maplibre-gl/dist/maplibre-gl.css"),
-        ]).then(([module]) => module.EnterpriseMap));
+        (mapModule ??= import("$lib/map/enterprise_map").then(
+            (module) => module.EnterpriseMap,
+        ));
 
     onMount(() => {
         // Fetch the code in the background so the first switch to the map is quick.
@@ -148,8 +147,44 @@
         }
 
         // Third-party control: underline so its link isn't distinguished by colour alone.
-        :global(.maplibregl-ctrl-attrib a) {
+        :global(.leaflet-control-attribution a) {
             text-decoration: underline;
+        }
+
+        // Cards supply their own padding and width inside map popups.
+        :global(.leaflet-popup-content-wrapper) {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        :global(.leaflet-popup-content) {
+            margin: 0;
+        }
+
+        :global(.enterprise-map-marker) {
+            cursor: pointer;
+        }
+
+        // Shown briefly by EnterpriseMap when a gesture is reserved for the page.
+        :global(.enterprise-map-gesture-hint) {
+            position: absolute;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: $gap;
+            background-color: rgb(0 0 0 / 0.5);
+            color: $white;
+            font-size: $text-body;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 200ms ease-in-out;
+        }
+
+        :global(.enterprise-map-gesture-hint.visible) {
+            opacity: 1;
         }
 
         .loading {

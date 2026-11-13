@@ -1,4 +1,4 @@
-import type { ProductData } from "$lib/data/ldkit/schemas";
+import type { ProductData } from "$lib/data/ld/mapping";
 
 export class Product {
     id: string = "";
@@ -11,7 +11,7 @@ export class Product {
     enterpriseId: string = "";
     enterpriseName: string = "";
 
-    static fromLdkit(data: ProductData, enterpriseId: string, enterpriseName: string): Product {
+    static fromData(data: ProductData, enterpriseId: string, enterpriseName: string): Product {
         const product = new Product();
 
         if (!data.name)

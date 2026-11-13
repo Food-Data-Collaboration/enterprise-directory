@@ -58,12 +58,4 @@
         z-index: 2;
         contain: inline-size;
     }
-
-    :global(.maplibregl-popup-content) {
-        padding: 0 !important;
-    }
-
-    :global(.maplibregl-marker) {
-        cursor: pointer;
-    }
 </style>

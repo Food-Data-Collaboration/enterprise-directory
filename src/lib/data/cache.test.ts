@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createOrganizationCache, schemaVersion } from "./cache";
-import { OrganizationSchema, type OrganizationData } from "./ldkit/schemas";
+import { MAPPING, type OrganizationData } from "./ld/mapping";
 
 const PREFIX = "enterprise-directory:organizations:";
-const CURRENT = schemaVersion(OrganizationSchema);
+const CURRENT = schemaVersion(MAPPING);
 
 const organization: OrganizationData = {
     $id: "https://data.test/organizations/6/",
@@ -13,8 +13,8 @@ const organization: OrganizationData = {
     phone: "+11 2222 3333",
     website: "test.site.com",
     logo: null,
-    hasAddress: null,
-    supplies: null,
+    addresses: [],
+    products: [],
 };
 
 function memoryStorage(): Storage {
@@ -30,20 +30,21 @@ function memoryStorage(): Storage {
 }
 
 describe("schemaVersion", () => {
-    it("is stable for the same schema", () => {
-        expect(schemaVersion(OrganizationSchema)).toBe(schemaVersion(structuredClone(OrganizationSchema)));
+    it("is stable for the same mapping", () => {
+        expect(schemaVersion(MAPPING)).toBe(schemaVersion(structuredClone(MAPPING)));
     });
 
-    it("changes when a property is added", () => {
-        const changed = { ...OrganizationSchema, email: { "@id": "dfc-b:email", "@optional": true } };
+    it("changes when a field is added", () => {
+        const changed = {
+            ...MAPPING,
+            organization: { ...MAPPING.organization, vatNumber: "dfc-b:VATnumber" },
+        };
         expect(schemaVersion(changed)).not.toBe(CURRENT);
     });
 
-    it("changes when a nested schema changes", () => {
-        const changed = structuredClone(OrganizationSchema) as unknown as {
-            hasAddress: { "@schema": { contains: { "@schema": { city: { "@optional"?: true } } } } };
-        };
-        delete changed.hasAddress["@schema"].contains["@schema"].city["@optional"];
+    it("changes when a nested term changes", () => {
+        const changed = structuredClone(MAPPING) as { address: Record<string, string> };
+        changed.address.city = "dfc-b:hasCity";
         expect(schemaVersion(changed)).not.toBe(CURRENT);
     });
 });

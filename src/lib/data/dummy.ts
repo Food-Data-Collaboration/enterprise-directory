@@ -5,7 +5,7 @@ import type { EnterpriseSource } from ".";
 export class DummyEnterpriseSource implements EnterpriseSource {
     fetchEnterprises(): Promise<Enterprise[]> {
         return Promise.resolve(
-            ukEnterprises.map(({ data, images }) => Enterprise.fromLdkit(data, images))
+            ukEnterprises.map(({ data, images }) => Enterprise.fromData(data, images))
         );
     }
 }

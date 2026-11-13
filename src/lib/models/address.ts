@@ -1,4 +1,4 @@
-import type { AddressData } from "$lib/data/ldkit/schemas";
+import type { AddressData } from "$lib/data/ld/mapping";
 
 export class Address {
     id: string = "";
@@ -10,7 +10,7 @@ export class Address {
     region: string = "";
     formatted = "";
 
-    static fromLdkit(data: AddressData): Address {
+    static fromData(data: AddressData): Address {
         const address = new Address();
 
         address.id = data.$id;

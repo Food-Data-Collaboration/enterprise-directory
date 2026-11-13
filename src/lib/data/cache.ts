@@ -1,4 +1,4 @@
-import { OrganizationSchema, type OrganizationData } from "./ldkit/schemas";
+import { MAPPING, type OrganizationData } from "./ld/mapping";
 
 const PREFIX = "enterprise-directory:organizations:";
 
@@ -16,7 +16,8 @@ export function schemaVersion(schema: object): string {
     return fnv1a(JSON.stringify(schema));
 }
 
-const VERSION = schemaVersion(OrganizationSchema);
+// Derived from the mapping, so any change to what is read invalidates old entries.
+const VERSION = schemaVersion(MAPPING);
 
 interface CacheEntry {
     version: string;

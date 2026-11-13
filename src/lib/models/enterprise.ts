@@ -1,5 +1,5 @@
 import { Address } from "$lib/models/address";
-import type { OrganizationData } from "$lib/data/ldkit/schemas";
+import type { OrganizationData } from "$lib/data/ld/mapping";
 import { Product } from "./product";
 
 export class Enterprise {
@@ -17,7 +17,7 @@ export class Enterprise {
     phone: string = "";
     csa: string = "";
 
-    static fromLdkit(data: OrganizationData, images: string[] = []): Enterprise {
+    static fromData(data: OrganizationData, images: string[] = []): Enterprise {
         const enterprise = new Enterprise();
 
         if (!data.name)
@@ -30,8 +30,7 @@ export class Enterprise {
         enterprise.email = data.email ?? "";
         enterprise.phone = data.phone ?? "";
         enterprise.logoUrl = data.logo ?? "";
-        enterprise.addresses = (data.hasAddress?.contains ?? [])
-            .map((address) => Address.fromLdkit(address));
+        enterprise.addresses = data.addresses.map((address) => Address.fromData(address));
         enterprise.images = images;
 
         if (URL.canParse(enterprise.id))
@@ -40,8 +39,9 @@ export class Enterprise {
                 .filter(Boolean)
                 .pop() ?? "";
 
-        enterprise.products = (data.supplies?.contains ?? [])
-            .map((product) => Product.fromLdkit(product, enterprise.profileId, enterprise.name));
+        enterprise.products = data.products.map((product) =>
+            Product.fromData(product, enterprise.profileId, enterprise.name),
+        );
         return enterprise;
     }
 }

@@ -1,4 +1,4 @@
-import type { OrganizationData } from "$lib/data/ldkit/schemas";
+import type { OrganizationData } from "$lib/data/ld/mapping";
 
 const BASE = "https://demo.enterprise-directory.invalid/organizations";
 
@@ -271,23 +271,23 @@ function toDummyOrganization(record: DemoRecord): DummyOrganization {
             $id: id,
             name: record.name,
             description: record.description,
+            website: null,
+            email: null,
+            phone: null,
             logo: `https://picsum.photos/seed/${record.slug}-logo/96/96`,
-            hasAddress: {
-                $id: `${id}/addresses`,
-                contains: [
-                    {
-                        $id: `${id}/addresses/1`,
-                        street: record.street,
-                        city: record.city,
-                        region: record.region,
-                        postcode: record.postalCode,
-                        country: "United Kingdom",
-                        longitude: String(record.lng),
-                        latitude: String(record.lat)
-                    }
-                ]
-            },
-            supplies: null
+            addresses: [
+                {
+                    $id: `${id}/addresses/1`,
+                    street: record.street,
+                    city: record.city,
+                    region: record.region,
+                    postcode: record.postalCode,
+                    country: "United Kingdom",
+                    longitude: String(record.lng),
+                    latitude: String(record.lat)
+                }
+            ],
+            products: []
         },
         images: [1, 2, 3].map(
             (index) => `https://picsum.photos/seed/${record.slug}-${index}/600/400`

@@ -1,9 +1,9 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { publicEnv } from './src/env.config';
 import svelteConfig from './svelte.config.js';
-import { workerPolyfills } from './vite.worker-polyfills';
 
 const shims = resolve('./src/web-component');
 
@@ -76,6 +76,32 @@ function envModule(env: Record<string, string>): Plugin {
 	};
 }
 
+const FONT_MODULE_ID = '\0enterprise-directory:font-url';
+const FONT_FILE = resolve('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2');
+
+/**
+ * `virtual:enterprise-directory/font-url`: the URL of the Inter font, emitted as its
+ * own hashed file next to the bundle. Library mode would otherwise base64 it into the
+ * JS; as a file it stays out of the parse and caches separately. Needs CORS on the host.
+ */
+function fontFile(): Plugin {
+	return {
+		name: 'enterprise-directory-font-file',
+		resolveId(source) {
+			if (source === 'virtual:enterprise-directory/font-url') return FONT_MODULE_ID;
+		},
+		load(id) {
+			if (id !== FONT_MODULE_ID) return;
+			const reference = this.emitFile({
+				type: 'asset',
+				name: 'inter-latin-wght-normal.woff2',
+				source: readFileSync(FONT_FILE)
+			});
+			return `export default import.meta.ROLLUP_FILE_URL_${reference};`;
+		}
+	};
+}
+
 function escapeStringLiteral(css: string): string {
 	return css
 		.replace(/\\/g, '\\\\')
@@ -112,7 +138,8 @@ export default defineConfig(({ mode }) => {
 				}
 			}),
 			inlineComponentStyles(),
-			envModule(env)
+			envModule(env),
+			fontFile()
 		],
 		css: {
 			preprocessorOptions: {
@@ -125,11 +152,9 @@ export default defineConfig(({ mode }) => {
 		},
 		resolve: {
 			alias: {
-				// Before '$lib' so this exact specifier wins over the prefix alias.
-				'$lib/data/organizations_worker': resolve(shims, 'organizations_worker.web-component.ts'),
 				'$lib': resolve('./src/lib'),
 				'$app/paths': resolve(shims, 'paths.web-component.ts'),
-				'maplibre-gl/dist/maplibre-gl.css': resolve(shims, 'empty.web-component.ts')
+				'leaflet/dist/leaflet.css': resolve(shims, 'empty.web-component.ts')
 			}
 		},
 		build: {
@@ -143,18 +168,14 @@ export default defineConfig(({ mode }) => {
 			emptyOutDir: true,
 			rolldownOptions: {
 				output: {
-					codeSplitting: false
-				}
-			}
-		},
-		// Library mode inlines the organisations worker into the bundle. It has to:
-		// the element is served cross-origin, and workers must be same-origin.
-		worker: {
-			format: 'es' as const,
-			plugins: () => [workerPolyfills()],
-			rolldownOptions: {
-				output: {
-					codeSplitting: false
+					// Vite skips whitespace minification for ES libraries, to leave them
+					// readable for downstream bundlers. This file goes straight to browsers.
+					minify: true,
+					comments: { annotation: false, jsdoc: false, legal: true },
+					// Lazily loaded parts (the map library, analytics) become hashed chunks
+					// next to enterprise-directory.js, fetched from the same host on demand.
+					chunkFileNames: '[name]-[hash].js',
+					assetFileNames: '[name]-[hash][extname]'
 				}
 			}
 		}
