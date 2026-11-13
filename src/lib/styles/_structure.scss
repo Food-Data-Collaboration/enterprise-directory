@@ -26,6 +26,34 @@ $web-component: false !default;
     }
 }
 
+@mixin until($max-width) {
+    @if $web-component {
+        @container #{$container} (width < #{$max-width}) {
+            @content;
+        }
+    }
+
+    @else {
+        @media screen and (width < #{$max-width}) {
+            @content;
+        }
+    }
+}
+
+@mixin responsive-class($name) {
+    @include until($breakpoint-medium) {
+        &.#{$name}-mobile {
+            @content;
+        }
+    }
+
+    @include from($breakpoint-medium) {
+        &.#{$name}-desktop {
+            @content;
+        }
+    }
+}
+
 @mixin web-component {
     @if $web-component {
         @content;

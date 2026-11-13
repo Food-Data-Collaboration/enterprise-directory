@@ -2,6 +2,7 @@
     import ProfileEnterprise from "$lib/components/profile_enterprise.svelte";
     import { getDirectoryState } from "$lib/models/state.svelte";
     import { page } from "$app/state";
+    import ProfilePlaceholder from "$lib/components/profile_placeholder.svelte";
 
     const userState = getDirectoryState();
     const enterprise = $derived(
@@ -11,4 +12,6 @@
 
 {#if enterprise}
     <ProfileEnterprise {enterprise} />
+{:else}
+    <ProfilePlaceholder notFound={userState.hasFetchedEnterprises} />
 {/if}

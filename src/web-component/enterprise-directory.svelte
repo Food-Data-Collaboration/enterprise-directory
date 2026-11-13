@@ -8,6 +8,10 @@
     customElement={{
         tag: "enterprise-directory",
         shadow: "open",
+        props: {
+            displayMode: { attribute: "display-mode", type: "String" },
+            displayModeMobile: { attribute: "display-mode-mobile", type: "String" },
+        },
     }}
 />
 
@@ -18,14 +22,23 @@
         setDirectoryState,
     } from "$lib/models/state.svelte";
     import { onMount } from "svelte";
-    import Filters from "$lib/components/filters.svelte";
-    import Directory from "$lib/components/directory.svelte";
-    import Map from "$lib/components/map.svelte";
+    import DirectoryLayout from "$lib/components/directory_layout.svelte";
     import Profile from "$lib/components/profile_enterprise.svelte";
     import { installFont, shadowStyles } from "./styles.web-component";
     import { enterpriseSource } from "$lib/data";
 
+    // Attributes override DISPLAY_MODE / DISPLAY_MODE_MOBILE from the build env.
+    let {
+        displayMode,
+        displayModeMobile,
+    }: { displayMode?: string | null; displayModeMobile?: string | null } =
+        $props();
+
     const userState = setDirectoryState(new DirectoryState());
+
+    $effect(() => {
+        userState.configureDisplay(displayMode, displayModeMobile);
+    });
 
     const ENTERPRISE_PATH = /^\/organizations\/(.+)$/;
 
@@ -54,8 +67,14 @@
             enterpriseSource.cached?.() ?? null,
         );
 
+        const host = (layout.getRootNode() as ShadowRoot).host;
+        const stopObserving = userState.observeContainer(host);
+
         layout.addEventListener("click", openProfile);
-        return () => layout.removeEventListener("click", openProfile);
+        return () => {
+            stopObserving();
+            layout.removeEventListener("click", openProfile);
+        };
     });
 </script>
 
@@ -70,15 +89,7 @@
             onback={() => (userState.selectedEnterprise = null)}
         />
     {/if}
-    <main>
-        <aside class:hide={!userState.showFilters}>
-            <Filters />
-        </aside>
-        <section>
-            <Map hidden={userState.activeTab != "Map"} />
-            <Directory hidden={userState.activeTab != "Directory"} />
-        </section>
-    </main>
+    <DirectoryLayout />
 </div>
 
 <style lang="scss">
@@ -102,57 +113,6 @@
         @include web-component {
             min-height: 0;
             overflow-y: auto;
-        }
-    }
-
-    main {
-        position: relative;
-        display: flex;
-        flex-grow: 1;
-        flex-direction: row;
-        gap: $gap;
-        min-height: 0;
-
-        @include from($breakpoint-medium) {
-            gap: 0;
-            margin: 0 calc(-1 * $gap);
-        }
-
-        section {
-            display: grid;
-            min-height: 0;
-            grid-template-rows: minmax(0, 1fr);
-        }
-
-        aside {
-            position: fixed;
-            display: flex;
-            flex-shrink: 0;
-            inset: 0;
-            z-index: 3;
-            background-color: $white;
-            width: 100%;
-            transition: all 200ms ease-in-out;
-            content-visibility: visible;
-
-            @include from($breakpoint-medium) {
-                position: sticky;
-                top: 16px;
-                width: calc($sidebar-width-large + $gap);
-                max-height: 100%;
-                margin: 0 0 0 $gap;
-            }
-
-            &.hide {
-                transform: translateX(-100cqw);
-                width: 0;
-                margin: 0;
-                content-visibility: hidden;
-
-                @include from($breakpoint-medium) {
-                    transform: translateX(-($sidebar-width-large + $gap));
-                }
-            }
         }
     }
 </style>

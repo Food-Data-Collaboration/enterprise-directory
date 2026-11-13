@@ -4,24 +4,40 @@
     import CardProduct from "./ui/card_product.svelte";
 
     import { resolve } from "$app/paths";
-    let { hidden }: { hidden: boolean } = $props();
+    import type { Responsive } from "$lib/models/display_mode";
+
+    let { hidden }: { hidden: Responsive<boolean> } = $props();
 
     const userState = getDirectoryState();
+    const views = $derived(userState.views);
 
     let productsVisited = $state(false);
     $effect(() => {
-        if (userState.activeTab == "Product") productsVisited = true;
+        if (userState.visibleTab == "Product") productsVisited = true;
     });
 </script>
 
-<article id="directory-view" class:hidden class:sidebar={userState.showFilters}>
-    <div class="list" class:inactive={userState.activeTab != "Directory"}>
+<article
+    id="directory-view"
+    class:hidden-desktop={hidden.desktop}
+    class:hidden-mobile={hidden.mobile}
+    class:sidebar={userState.showFilters}
+>
+    <div
+        class="list"
+        class:inactive-desktop={views.desktop.visibleTab != "Directory"}
+        class:inactive-mobile={views.mobile.visibleTab != "Directory"}
+    >
         {#each userState.enterprises as enterprise (enterprise.id)}
             <CardEnterprise {enterprise} />
         {/each}
     </div>
     {#if productsVisited}
-        <div class="list" class:inactive={userState.activeTab != "Product"}>
+        <div
+            class="list"
+            class:inactive-desktop={views.desktop.visibleTab != "Product"}
+            class:inactive-mobile={views.mobile.visibleTab != "Product"}
+        >
             {#each userState.products as product (`${product.enterpriseId}:${product.id}`)}
                 <CardProduct
                     {product}
@@ -40,12 +56,11 @@
         gap: $gap-large;
         grid-template-columns: 1fr;
         grid-auto-rows: max-content;
-        grid-area: 1 / 1;
         max-height: auto;
         z-index: 0;
         opacity: 1;
 
-        &.hidden {
+        @include responsive-class(hidden) {
             max-height: 0;
             overflow: hidden;
             z-index: -1;
@@ -55,7 +70,7 @@
         .list {
             display: contents;
 
-            &.inactive {
+            @include responsive-class(inactive) {
                 display: none;
             }
         }

@@ -15,7 +15,9 @@ export const publicEnv = {
 	POSTHOG_PROJECT_TOKEN: { required: false },
 	POSTHOG_HOST: { required: false },
 	POSTHOG_ASSETS_HOST: { required: false },
-	USE_DUMMY_DATA: { required: false }
+	USE_DUMMY_DATA: { required: false },
+	DISPLAY_MODE: { required: false },
+	DISPLAY_MODE_MOBILE: { required: false }
 } as const;
 
 export type PublicEnvKey = keyof typeof publicEnv;

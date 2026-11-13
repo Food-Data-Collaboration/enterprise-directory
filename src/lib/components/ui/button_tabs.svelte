@@ -3,10 +3,8 @@
     import { Grip, MapPin } from "@lucide/svelte";
     import { analytics } from "$lib/analytics";
     import type { Tabs } from "$lib/models/tabs";
-    import { ENABLE_PRODUCTS } from "$app/env/public";
 
     interface TabOption {
-        value: Tabs;
         id: string;
         label: string;
         title: string;
@@ -15,15 +13,33 @@
 
     const userState = getDirectoryState();
 
-    const tabs: TabOption[] = [
-        { value: "Map", id: "map_tab", label: "Map view", title: "Show map", icon: MapPin },
-        { value: "Directory", id: "directory_tab", label: "Organisations", title: "Show organisations", icon: Grip },
-        ...(ENABLE_PRODUCTS === "true"
-            ? [{ value: "Product", id: "product_tab", label: "Products", title: "Show products", icon: Grip } satisfies TabOption]
-            : []),
-    ];
+    const options: Record<Tabs, TabOption> = {
+        Map: {
+            id: "map_tab",
+            label: "Map view",
+            title: "Show map",
+            icon: MapPin,
+        },
+        Directory: {
+            id: "directory_tab",
+            label: "Organisations",
+            title: "Show organisations",
+            icon: Grip,
+        },
+        Product: {
+            id: "product_tab",
+            label: "Products",
+            title: "Show products",
+            icon: Grip,
+        },
+    };
 
-    const activeIndex = $derived(tabs.findIndex((tab) => tab.value === userState.activeTab));
+    const { desktop, mobile } = $derived(userState.views);
+    const allTabs = $derived(
+        (Object.keys(options) as Tabs[]).filter(
+            (tab) => desktop.tabs.includes(tab) || mobile.tabs.includes(tab),
+        ),
+    );
 
     function changeView(view: Tabs) {
         userState.activeTab = view;
@@ -31,28 +47,47 @@
     }
 </script>
 
-{#if userState.isTabbed}
+{#if allTabs.length > 0}
     <div
         class="button-group"
+        class:hidden-desktop={desktop.tabs.length === 0}
+        class:hidden-mobile={mobile.tabs.length === 0}
         role="radiogroup"
-        style:--count={tabs.length}
-        style:--index={Math.max(activeIndex, 0)}
+        style:--count-desktop={desktop.tabs.length}
+        style:--count-mobile={mobile.tabs.length}
+        style:--index-desktop={Math.max(
+            desktop.tabs.indexOf(desktop.visibleTab),
+            0,
+        )}
+        style:--index-mobile={Math.max(
+            mobile.tabs.indexOf(mobile.visibleTab),
+            0,
+        )}
     >
-        <!-- Sliding marker behind the selected tab; positioned from --index/--count. -->
-        <div class="selection-pill" class:hidden={activeIndex === -1} aria-hidden="true"></div>
+        <div class="selection-pill" aria-hidden="true"></div>
 
-        {#each tabs as tab (tab.value)}
+        {#each allTabs as tab (tab)}
+            {@const option = options[tab]}
+            {@const hiddenDesktop = !desktop.tabs.includes(tab)}
+            {@const hiddenMobile = !mobile.tabs.includes(tab)}
             <input
                 type="radio"
-                id={tab.id}
+                id={option.id}
                 name="tabs"
-                value={tab.value}
-                checked={userState.activeTab === tab.value}
-                onchange={() => changeView(tab.value)}
+                value={tab}
+                class:hidden-desktop={hiddenDesktop}
+                class:hidden-mobile={hiddenMobile}
+                checked={userState.visibleTab === tab}
+                onchange={() => changeView(tab)}
             />
-            <label for={tab.id} title={tab.title}>
-                <tab.icon size="18" />
-                <span class="label">{tab.label}</span>
+            <label
+                for={option.id}
+                title={option.title}
+                class:hidden-desktop={hiddenDesktop}
+                class:hidden-mobile={hiddenMobile}
+            >
+                <option.icon size="18" />
+                <span class="label">{option.label}</span>
             </label>
         {/each}
     </div>
@@ -65,12 +100,8 @@
     .button-group {
         position: relative;
         display: inline-grid;
-        // One column per tab. With no fixed width, 1fr columns all grow to the
-        // widest label, so tabs are equal and the marker can be positioned
-        // purely from the tab count and selected index.
         grid-auto-flow: column;
         grid-auto-columns: 1fr;
-        // Keep the labels' blend mode confined to this group.
         isolation: isolate;
         background-color: $white;
         padding: $group-padding;
@@ -79,8 +110,24 @@
         width: fit-content;
         box-shadow: $drop-shadow;
 
+        --count: var(--count-desktop);
+        --index: var(--index-desktop);
+
+        @include until($breakpoint-medium) {
+            --count: var(--count-mobile);
+            --index: var(--index-mobile);
+        }
+
         &:has(:focus-visible) {
             outline: 2px solid $black;
+        }
+    }
+
+    .button-group,
+    input[type="radio"],
+    input[type="radio"] + label {
+        @include responsive-class(hidden) {
+            display: none;
         }
     }
 
@@ -95,10 +142,6 @@
         border-radius: $radius-full;
         z-index: 1;
         transition: transform 300ms cubic-bezier(0.65, 0, 0.35, 1);
-
-        &.hidden {
-            opacity: 0;
-        }
 
         @media (prefers-reduced-motion: reduce) {
             transition: none;

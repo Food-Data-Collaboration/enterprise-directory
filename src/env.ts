@@ -92,6 +92,16 @@ export const variables = defineEnvVars({
         static: true,
         schema: optionalString
     },
+    DISPLAY_MODE: {
+        public: true,
+        static: true,
+        schema: optionalString
+    },
+    DISPLAY_MODE_MOBILE: {
+        public: true,
+        static: true,
+        schema: optionalString
+    },
 });
 
 type AssertTrue<T extends true> = T;

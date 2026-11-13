@@ -34,6 +34,7 @@ export class EnterpriseMap {
     readonly #clusters: EnterpriseClusters;
     readonly #markers = new Map<string, { marker: maplibregl.Marker; cleanup: () => void }>();
     #zoomLevel = Number.NaN;
+    readonly #resizeObserver = new ResizeObserver(() => this.#map.resize());
 
     constructor(
         container: HTMLElement,
@@ -78,6 +79,7 @@ export class EnterpriseMap {
         });
 
         this.#map.setMaxBounds(this.#map.getBounds());
+        this.#resizeObserver.observe(container);
 
         if (options.initialView) this.#map.jumpTo(options.initialView);
         else this.recentre();
@@ -109,11 +111,13 @@ export class EnterpriseMap {
         this.#map.setCenter(new maplibregl.LngLat(lng, lat));
     }
 
-    resize(): void {
-        this.#map.resize();
+    setCooperativeGestures(enabled: boolean): void {
+        if (enabled) this.#map.cooperativeGestures.enable();
+        else this.#map.cooperativeGestures.disable();
     }
 
     destroy(): void {
+        this.#resizeObserver.disconnect();
         this.#clearMarkers();
         this.#map.remove();
     }

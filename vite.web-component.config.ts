@@ -50,6 +50,31 @@ function inlineComponentStyles(): Plugin {
 	};
 }
 
+const ENV_MODULE_ID = '\0enterprise-directory:env';
+
+/**
+ * Stands in for `$app/env` and `$app/env/public`, which only exist under SvelteKit.
+ * Generated from `publicEnv` so every declared variable reaches the component
+ * without a hand-kept export list.
+ */
+function envModule(env: Record<string, string>): Plugin {
+	return {
+		name: 'enterprise-directory-env',
+		enforce: 'pre',
+		resolveId(source) {
+			if (source === '$app/env' || source === '$app/env/public') return ENV_MODULE_ID;
+		},
+		load(id) {
+			if (id !== ENV_MODULE_ID) return;
+
+			const values = Object.keys(publicEnv).map(
+				(key) => `export const ${key} = ${JSON.stringify(env[key]) ?? 'undefined'};`
+			);
+			return [...values, 'export const dev = import.meta.env.DEV;', 'export const browser = true;'].join('\n');
+		}
+	};
+}
+
 function escapeStringLiteral(css: string): string {
 	return css
 		.replace(/\\/g, '\\\\')
@@ -85,14 +110,9 @@ export default defineConfig(({ mode }) => {
 						filename.endsWith('enterprise-directory.svelte')
 				}
 			}),
-			inlineComponentStyles()
+			inlineComponentStyles(),
+			envModule(env)
 		],
-		define: Object.fromEntries(
-			Object.keys(publicEnv).map((key) => [
-				`import.meta.env.${key}`,
-				JSON.stringify(env[key] ?? null)
-			])
-		),
 		css: {
 			preprocessorOptions: {
 				scss: {
@@ -105,8 +125,6 @@ export default defineConfig(({ mode }) => {
 		resolve: {
 			alias: {
 				'$lib': resolve('./src/lib'),
-				'$app/env/public': resolve(shims, 'env.web-component.ts'),
-				'$app/env': resolve(shims, 'env.web-component.ts'),
 				'$app/paths': resolve(shims, 'paths.web-component.ts'),
 				'maplibre-gl/dist/maplibre-gl.css': resolve(shims, 'empty.web-component.ts')
 			}

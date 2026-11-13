@@ -11,8 +11,12 @@
         type MarkerRenderer,
         type RenderedElement,
     } from "$lib/map/enterprise_map";
+    import type { Responsive } from "$lib/models/display_mode";
 
-    let { hidden }: { hidden: boolean } = $props();
+    let {
+        hidden,
+        stacked,
+    }: { hidden: Responsive<boolean>; stacked: Responsive<boolean> } = $props();
     let isLoading: boolean = $state(true);
     let map: EnterpriseMap | null = $state.raw(null);
     let container: HTMLDivElement;
@@ -62,20 +66,24 @@
     });
 
     $effect(() => {
-        if (!hidden) map?.resize();
+        map?.setCooperativeGestures(userState.mode === "stacked");
     });
 </script>
 
-<article id="map-view" class:hidden class:stack={!userState.isTabbed}>
+<article
+    id="map-view"
+    class:hidden-desktop={hidden.desktop}
+    class:hidden-mobile={hidden.mobile}
+    class:stack-desktop={stacked.desktop}
+    class:stack-mobile={stacked.mobile}
+>
     <div
         id="map"
         bind:this={container}
-        class={isLoading ? "invisible" : ""}
+        class:invisible={isLoading}
     ></div>
     {#if isLoading}
-        <div
-            style="position:fixed; inset: 0; display:flex; align-items: center; justify-content: center;"
-        >
+        <div class="loading">
             <MapPin />
             Loading map...
         </div>
@@ -88,7 +96,6 @@
         display: flex;
         flex: 1;
         width: 100%;
-        grid-area: 1 / 1;
         z-index: 0;
         opacity: 1;
 
@@ -100,7 +107,7 @@
             min-height: 0;
         }
 
-        &.hidden {
+        @include responsive-class(hidden) {
             z-index: -1;
             opacity: 0;
             visibility: hidden;
@@ -122,7 +129,22 @@
             }
         }
 
-        &.stack {
+        .loading {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @include responsive-class(stack) {
+            // The layout's grid row sets the height in stacked mode.
+            min-height: 0;
+
+            .loading {
+                position: absolute;
+            }
+
             #map {
                 position: relative;
                 width: 100%;
