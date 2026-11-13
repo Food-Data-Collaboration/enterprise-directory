@@ -59,11 +59,12 @@
             align-items: center;
             justify-content: center;
             gap: $gap-xsmall;
-            @include from($breakpoint-small) {
-                grid-template-columns: 66% 33%;
-            }
+            grid-template-columns: auto 1fr;
+            grid-template-areas: "tabs search";
+
             @include from($breakpoint-medium) {
-                grid-template-columns: 25% 50% 25%;
+                grid-template-columns: 1fr 2fr 1fr;
+                grid-template-areas: ". tabs search";
             }
 
             #head-logo {
@@ -80,19 +81,21 @@
                 }
             }
             #head-tabs {
+                grid-area: tabs;
                 display: inline-flex;
                 justify-content: center;
                 gap: $gap;
             }
 
             #head-search {
+                grid-area: search;
                 position: relative;
                 display: inline-flex;
                 flex-direction: row;
                 flex: 1;
                 align-items: center;
                 max-width: 768px;
-                padding: $gap;
+                padding: $gap-small;
                 gap: $gap-xsmall;
                 background-color: $white;
                 border-radius: $radius-full;

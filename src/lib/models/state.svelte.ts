@@ -27,7 +27,7 @@ export class DirectoryState {
     hasFetchedEnterprises = $state(false);
     showFilters = $state(false);
     filters = $state(new FilterState());
-    activeTab = $state<Tabs>("Directory");
+    activeTab = $state<Tabs>("Map");
     mapView: MapView | null = null;
 
     displayMode = $state<DisplayMode>(DEFAULT_DISPLAY_MODE);
